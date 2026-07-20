@@ -1,0 +1,10 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Keep directories but ignore their contents
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+
