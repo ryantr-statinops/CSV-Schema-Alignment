@@ -8,7 +8,7 @@ def align_columns(
     left_names: list[str],
     right_names: list[str],
     matrix: list[list[float]],
-    min_confidence: float = 0.0,
+    min_confidence: float = 0.35,
 ) -> tuple[list[dict[str, Any]], list[str], list[str]]:
     left_count = len(left_names)
     right_count = len(right_names)
@@ -79,10 +79,18 @@ def _greedy_alignment(
     assignments: list[dict[str, Any]] = []
     unmatched_left: list[str] = []
 
-    for left_idx, left_name in enumerate(left_names):
+    left_order = sorted(
+        range(len(left_names)),
+        key=lambda i: max(matrix[i]) if i < len(matrix) and matrix[i] else -1.0,
+        reverse=True,
+    )
+
+    for left_idx in left_order:
+        left_name = left_names[left_idx]
+        row = matrix[left_idx] if left_idx < len(matrix) else []
         best_idx = None
         best_score = -1.0
-        for right_idx, score in enumerate(matrix[left_idx] if left_idx < len(matrix) else []):
+        for right_idx, score in enumerate(row):
             if right_idx in used_right:
                 continue
             if score > best_score:
