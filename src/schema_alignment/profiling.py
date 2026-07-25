@@ -1,9 +1,15 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Iterable
 
 from .normalization import normalize_header
+
+_DATE_RE = re.compile(r"^\d{1,2}[/-]\d{1,2}[/-]\d{2,4}$")
+_PHONE_RE = re.compile(r"^0\d{9,10}$")
+_URL_RE = re.compile(r"^https?://", re.IGNORECASE)
+_PRICE_RE = re.compile(r"^[\d.]+$")
 
 
 @dataclass(slots=True)
@@ -21,7 +27,14 @@ def _detect_datatype(values: Iterable[str]) -> str:
     non_empty = [value for value in values if value.strip()]
     if not non_empty:
         return "empty"
-    if all(value.isdigit() for value in non_empty):
+    non_empty_strs = [v for v in non_empty if v.strip()]
+    if all(_DATE_RE.match(v) for v in non_empty_strs):
+        return "date"
+    if all(_PHONE_RE.match(v) for v in non_empty_strs):
+        return "phone"
+    if all(_URL_RE.match(v) for v in non_empty_strs):
+        return "url"
+    if all(v.isdigit() for v in non_empty_strs):
         return "integer"
     return "text"
 
