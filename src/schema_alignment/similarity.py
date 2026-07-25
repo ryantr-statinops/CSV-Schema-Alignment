@@ -9,6 +9,16 @@ def header_similarity(left: str, right: str) -> float:
     return SequenceMatcher(None, left, right).ratio()
 
 
+def token_similarity(left: str, right: str) -> float:
+    left_tokens = set(left.split())
+    right_tokens = set(right.split())
+    if not left_tokens or not right_tokens:
+        return 0.0
+    overlap = len(left_tokens & right_tokens)
+    union = len(left_tokens | right_tokens)
+    return overlap / union if union else 0.0
+
+
 def value_similarity(left: ColumnProfile, right: ColumnProfile) -> float:
     left_values = {value.strip().lower() for value in left.sample_values if value.strip()}
     right_values = {value.strip().lower() for value in right.sample_values if value.strip()}
@@ -41,9 +51,10 @@ def compare_columns(
             right = right_profiles[right_name]
             score = (
                 0.35 * header_similarity(left.normalized_name, right.normalized_name)
-                + 0.35 * value_similarity(left, right)
+                + 0.15 * token_similarity(left.normalized_name, right.normalized_name)
+                + 0.30 * value_similarity(left, right)
                 + 0.15 * datatype_similarity(left, right)
-                + 0.15 * profile_similarity(left, right)
+                + 0.05 * profile_similarity(left, right)
             )
             row.append(score)
         matrix.append(row)
