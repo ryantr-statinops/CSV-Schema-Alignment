@@ -209,6 +209,14 @@ function handleApiRequest(request) {
 
     case 'getActivityLogs':
       return { success: true, logs: activityLogService.getLogs() };
+
+    // Optional stateless compute engine. Disabled unless explicitly configured.
+    case 'compute':
+      return engineClient.compute(
+        data && data.operation,
+        data && data.input,
+        data && data.request_id
+      );
       
     case 'clearActivityLogs':
       if (!authService.getAuthStatus().isOwner) {
@@ -297,4 +305,3 @@ function updateLastChangedTimestamp() {
     console.error("Lỗi cập nhật LAST_CHANGED_TIMESTAMP: " + e.toString());
   }
 }
-
