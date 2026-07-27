@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Nhúng Google Font 'Inter' -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-main: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --danger: #ef4444;
+        --danger-hover: #dc2626;
+        --danger-bg: #fee2e2;
+        --warning: #f59e0b;
+        --warning-bg: #fef3c7;
+        --success: #10b981;
+        --success-bg: #d1fae5;
+        --radius-lg: 12px;
+        --radius-md: 8px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        padding: 0;
+        margin: 0;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        font-size: 13px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        box-sizing: border-box;
+      }
+
+      /* STYLE HEADER MỚI ĐỒNG BỘ */
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border-color);
+        margin: -16px -16px 12px -16px;
+      }
+      
+      .sidebar-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      
+      body.in-iframe .sidebar-header {
+        display: none !important;
+      }
+      
+      body.in-iframe .container {
+        padding-top: 8px !important;
+      }
+
+      /* TOOLBAR */
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 12px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-sm);
+        gap: 8px;
+      }
+
+      .toolbar-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .info-sheet {
+        font-weight: 600;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .info-template {
+        font-size: 11px;
+        color: var(--text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* FORM STYLES */
+      .form-card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-weight: 500;
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 12.5px;
+        background-color: var(--card-bg);
+        color: var(--text-main);
+        transition: var(--transition);
+        outline: none;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .form-control:disabled, .form-control[readonly] {
+        background-color: #f1f5f9;
+        color: #94a3b8;
+        cursor: not-allowed;
+      }
+
+      /* CHECKBOX CARD */
+      .checkbox-card {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background-color: var(--card-bg);
+        cursor: pointer;
+        user-select: none;
+        transition: var(--transition);
+      }
+
+      .checkbox-card:hover {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+      }
+
+      .checkbox-card input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary);
+        cursor: pointer;
+        margin: 0;
+      }
+
+      .checkbox-card label {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--text-main);
+        cursor: pointer;
+        margin: 0;
+        flex-grow: 1;
+      }
+
+      /* BUTTONS */
+      .btn {
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: var(--transition);
+        box-sizing: border-box;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-secondary {
+        background-color: var(--card-bg);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        background-color: #f1f5f9;
+        color: var(--text-main);
+      }
+
+      .btn-icon {
+        padding: 0;
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
+        flex-shrink: 0;
+      }
+
+      /* NOTIFICATION CARDS */
+      .alert-card {
+        padding: 14px;
+        border-radius: var(--radius-lg);
+        font-size: 12px;
+        line-height: 1.5;
+        border: 1px solid transparent;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .alert-warning {
+        background-color: var(--warning-bg);
+        border-color: #fde047;
+        color: #854d0e;
+      }
+
+      .alert-warning strong {
+        color: #713f12;
+      }
+
+      /* STATUS TOAST */
+      #status {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        background-color: var(--primary);
+        color: white;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        font-size: 11.5px;
+        font-weight: 500;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+        z-index: 2000;
+        animation: fadeIn 0.2s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      
+      <!-- HEADER -->
+      <div class="sidebar-header">
+        <span class="sidebar-title">Nhập liệu</span>
+      </div>
+
+      <!-- TOOLBAR THÔNG TIN SHEET HOẠT ĐỘNG -->
+      <div class="toolbar">
+        <div class="toolbar-info">
+          <div class="info-sheet" id="activeSheetName">Đang tải...</div>
+          <div class="info-template" id="linkedTemplateName">Đang xác thực template...</div>
+        </div>
+        <button class="btn btn-secondary btn-icon" onclick="loadConfig()" title="Tải lại cấu hình">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 4v6h-6"></path>
+            <path d="M1 20v-6h6"></path>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- KHU VỰC CHỨA FORM HOẶC CẢNH BÁO -->
+      <div id="contentArea">
+        <div style="color: var(--text-muted); text-align: center; padding: 20px 0;">Đang kiểm tra cấu hình liên kết...</div>
+      </div>
+
+    </div>
+
+    <!-- STATUS TOAST -->
+    <div id="status"></div>
+
+    <script>
+      // Đăng ký check in-iframe
+      window.onload = function() {
+        if (window.self !== window.top) {
+          document.body.classList.add('in-iframe');
+        }
+        loadConfig();
+      };
+
+      // Gọi API qua Single Entry Point
+      function callApi(action, data, onSuccess, onFailure) {
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(onFailure || function(err) {
+            showToast("Lỗi kết nối máy chủ: " + err.toString());
+          })
+          .handleApiRequest({ action: action, data: data });
+      }
+
+      // Hiện Toast thông báo nhanh
+      var toastTimeout;
+      function showToast(msg, duration) {
+        var status = document.getElementById("status");
+        status.innerText = msg;
+        status.style.display = "block";
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(function() {
+          status.style.display = "none";
+        }, duration || 3000);
+      }
+
+      // Tải cấu hình form dựa trên sheet hoạt động
+      function loadConfig() {
+        var contentArea = document.getElementById("contentArea");
+        contentArea.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 20px 0;">Đang tải cấu hình form...</div>';
+        
+        document.getElementById("activeSheetName").innerText = "Đang tải...";
+        document.getElementById("linkedTemplateName").innerText = "Đang kiểm tra template...";
+
+        callApi('getDataEntryConfig', {}, function(res) {
+          if (!res.success) {
+            contentArea.innerHTML = '<div class="alert-card alert-warning"><strong>Lỗi hệ thống:</strong> ' + escapeHtml(res.message) + '</div>';
+            return;
+          }
+
+          document.getElementById("activeSheetName").innerText = "Sheet: " + res.sheetName;
+          
+          if (!res.linked) {
+            if (res.isDbSheet) {
+              document.getElementById("linkedTemplateName").innerText = "Template: " + (res.templateName || "");
+              contentArea.innerHTML = `
+                <div class="alert-card alert-warning">
+                  <strong>Không thể nhập liệu tại đây!</strong>
+                  Sheet này là DATABASE của template "${escapeHtml(res.templateName || "")}". Vui lòng chọn sheet thành phần để nhập dữ liệu.
+                </div>
+              `;
+            } else {
+              document.getElementById("linkedTemplateName").innerText = "Không có Template liên kết";
+              contentArea.innerHTML = `
+                <div class="alert-card alert-warning">
+                  <strong>Chưa có liên kết!</strong>
+                  Sheet hiện tại không có liên kết với Template nào. Vui lòng thiết lập liên kết trong mục Quản lý Sheets trước.
+                </div>
+              `;
+            }
+            return;
+          }
+
+          document.getElementById("linkedTemplateName").innerText = "Template: " + res.templateName;
+          renderForm(res.fields);
+        });
+      }
+
+      // Render Form dựa trên danh sách Header Fields
+      function renderForm(fields) {
+        var contentArea = document.getElementById("contentArea");
+        if (!fields || fields.length === 0) {
+          contentArea.innerHTML = `
+            <div class="alert-card alert-warning">
+              <strong>Template trống!</strong>
+              Template liên kết hiện chưa có cột Header nào được thiết lập.
+            </div>
+          `;
+          return;
+        }
+
+        var html = '<form id="dataEntryForm" class="form-card" onsubmit="handleFormSubmit(event)">';
+        
+        fields.forEach(function(field) {
+          var requiredMark = field.required ? ' <span style="color:var(--danger);font-weight:700;">*</span>' : '';
+          html += '<div class="form-group">';
+          
+          if (field.dataType === 'checkbox') {
+            // Checkbox render dạng card switch
+            var isChecked = field.defaultValue === 'true' || field.defaultValue === true;
+            html += `
+              <div class="checkbox-card">
+                <input type="checkbox" id="field_${field.id}" name="${escapeHtml(field.name)}" ${isChecked ? 'checked' : ''} data-required="${field.required ? 'true' : 'false'}">
+                <label for="field_${field.id}">${escapeHtml(field.name)}${requiredMark}</label>
+              </div>
+            `;
+          } else {
+            html += `<label for="field_${field.id}">${escapeHtml(field.name)}${requiredMark}</label>`;
+            
+            if (field.dataType === 'dropdown') {
+              // Dropdown render select tag
+              var reqAttr = field.required ? 'data-required="true"' : '';
+              html += `<select class="form-control" id="field_${field.id}" name="${escapeHtml(field.name)}" ${reqAttr}>`;
+              html += '<option value="">(Chọn giá trị)</option>';
+              if (field.options && field.options.length > 0) {
+                field.options.forEach(function(opt) {
+                  var selected = opt === field.defaultValue ? 'selected' : '';
+                  html += `<option value="${escapeHtml(opt)}" ${selected}>${escapeHtml(opt)}</option>`;
+                });
+              }
+              html += '</select>';
+            } else if (field.dataType === 'formula') {
+              // Formula render readonly input
+              html += `<input type="text" class="form-control" id="field_${field.id}" name="${escapeHtml(field.name)}" value="${escapeHtml(field.defaultValue || '')}" readonly placeholder="(Tự động tính toán)">`;
+            } else {
+              // Text, Number, Date inputs
+              var inputType = 'text';
+              if (field.dataType === 'number') inputType = 'number';
+              if (field.dataType === 'date') inputType = 'date';
+              var reqAttr = field.required ? 'data-required="true"' : '';
+              
+              html += `<input type="${inputType}" class="form-control" id="field_${field.id}" name="${escapeHtml(field.name)}" value="${escapeHtml(field.defaultValue || '')}" placeholder="Nhập ${escapeHtml(field.name.toLowerCase())}..." ${reqAttr}>`;
+            }
+          }
+          
+          html += '</div>';
+        });
+
+        html += `
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 6px; height: 36px; border-radius: var(--radius-md);">
+            Lưu dữ liệu
+          </button>
+        `;
+        html += '</form>';
+        
+        contentArea.innerHTML = html;
+      }
+
+      // Xử lý gửi Form nhập liệu lên Server
+      function handleFormSubmit(event) {
+        event.preventDefault();
+        var form = document.getElementById("dataEntryForm");
+        var formDataObj = {};
+        var errors = [];
+        
+        // Trích xuất dữ liệu từ các thẻ input, select
+        var inputs = form.querySelectorAll("input, select");
+        inputs.forEach(function(input) {
+          if (input.type === 'checkbox') {
+            formDataObj[input.name] = input.checked;
+            if (input.dataset.required === 'true' && !input.checked) {
+              var label = form.querySelector('label[for="' + input.id + '"]');
+              var labelText = label ? label.textContent.trim() : input.name;
+              errors.push("Vui lòng chọn \"" + labelText + "\"");
+            }
+          } else if (input.type === 'date') {
+            var val = input.value; // "YYYY-MM-DD"
+            if (val) {
+              var parts = val.split('-');
+              if (parts.length === 3) {
+                formDataObj[input.name] = parts[2] + '/' + parts[1] + '/' + parts[0];
+              } else {
+                formDataObj[input.name] = val;
+              }
+            } else {
+              formDataObj[input.name] = "";
+            }
+            if (input.dataset.required === 'true' && !val) {
+              errors.push("Vui lòng nhập \"" + input.name + "\"");
+            }
+          } else if (input.readonly) {
+            formDataObj[input.name] = input.value;
+          } else {
+            formDataObj[input.name] = input.value;
+            if (input.dataset.required === 'true' && !input.value.trim()) {
+              errors.push("Vui lòng nhập \"" + input.name + "\"");
+            }
+          }
+        });
+
+        if (errors.length > 0) {
+          showToast(errors[0], 4000);
+          return;
+        }
+
+        showToast("Đang gửi dữ liệu...", 10000);
+        
+        callApi('submitDataEntry', formDataObj, function(res) {
+          if (res.success) {
+            showToast(res.message);
+            form.reset();
+          } else {
+            showToast("Lỗi: " + res.message);
+          }
+        });
+      }
+
+      // Helper escape ký tự đặc biệt trong HTML
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.toString()
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    </script>
+  </body>
+</html>

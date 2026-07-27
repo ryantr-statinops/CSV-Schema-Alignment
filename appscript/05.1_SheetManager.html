@@ -1,0 +1,2428 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Nhúng Google Font 'Inter' -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-main: #f8fafc;
+        --card-bg: #ffffff;
+        --border-color: #e2e8f0;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --danger: #ef4444;
+        --danger-hover: #dc2626;
+        --danger-bg: #fee2e2;
+        --success: #10b981;
+        --success-bg: #d1fae5;
+        --warning: #f59e0b;
+        --warning-bg: #fef3c7;
+        --radius-lg: 12px;
+        --radius-md: 8px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        padding: 0;
+        margin: 0;
+        background-color: var(--bg-main);
+        color: var(--text-main);
+        font-size: 13px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        box-sizing: border-box;
+      }
+
+      /* STYLE HEADER MỚI ĐỒNG BỘ */
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-bottom: 1px solid var(--border-color);
+        margin: -16px -16px 12px -16px;
+      }
+      .sidebar-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      body.in-iframe .sidebar-header {
+        display: none !important;
+      }
+      body.in-iframe .container {
+        padding-top: 8px !important;
+      }
+
+      h2 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 12px;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 6px;
+      }
+
+      /* THANH TÌM KIẾM & BỘ LỌC */
+      .search-box {
+        margin-bottom: 16px;
+      }
+      .search-box input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        background-color: var(--card-bg);
+      }
+
+      /* PHẦN DANH SÁCH SHEET & THƯ MỤC */
+      .folder-card {
+        background-color: #f1f5f9;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 8px 10px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-weight: 600;
+        position: relative;
+        box-sizing: border-box;
+        transition: var(--transition);
+      }
+      /* Nâng cao stacking context cho card có dropdown đang mở để tránh bị đè layer */
+      .sheet-card.active-menu, .folder-card.active-menu {
+        z-index: 15 !important;
+      }
+      
+      .folder-sheets-container {
+        padding-left: 12px;
+        border-left: 2px solid var(--border-color);
+        margin-left: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .sheet-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 8px 10px;
+        margin-bottom: 4px;
+        display: flex;
+        flex-direction: column;
+        transition: var(--transition);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+        box-sizing: border-box;
+        position: relative;
+      }
+      .sheet-card:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border-color: #cbd5e1;
+      }
+
+      .card-header-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        width: 100%;
+      }
+
+      /* Container nút thay đổi thứ tự card */
+      .order-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        margin-right: 4px;
+        flex-shrink: 0;
+        user-select: none;
+      }
+      .order-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 1px;
+        border-radius: 4px;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .order-btn:hover {
+        background-color: rgba(15, 23, 42, 0.08);
+        color: var(--primary);
+      }
+      .order-btn:disabled {
+        color: #e2e8f0;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      /* Đảm bảo flex layout thông minh cho title để không bị đứt chữ số lượng */
+      .card-title {
+        flex-grow: 1;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        padding-right: 4px;
+      }
+      .folder-name-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-grow: 1;
+        min-width: 0;
+      }
+      .sheet-count {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-left: 4px;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .sheet-hidden-badge {
+        background-color: #e2e8f0;
+        color: var(--text-muted);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 500;
+        margin-left: 6px;
+        flex-shrink: 0;
+      }
+
+      /* Cải tiến: Nút hành động nhanh trên Card (Eye & Kebab Menu) */
+      .card-action-btn-quick {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: var(--radius-md);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+      }
+      .card-action-btn-quick:hover {
+        background-color: rgba(15, 23, 42, 0.06);
+        color: var(--primary);
+      }
+      .card-action-btn-quick.btn-danger:hover {
+        background-color: var(--danger-bg);
+        color: var(--danger);
+      }
+      .card-action-btn-quick:active {
+        transform: scale(0.9);
+      }
+
+      /* Kebab Menu Container */
+      .kebab-menu-container {
+        position: relative;
+        display: inline-block;
+      }
+      .kebab-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 24px;
+        z-index: 100;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        min-width: 120px;
+        box-sizing: border-box;
+        overflow: hidden;
+        animation: fadeIn 0.15s ease-out;
+      }
+      .kebab-dropdown button {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-family: inherit;
+        color: var(--text-main);
+        cursor: pointer;
+        transition: var(--transition);
+        display: block;
+        box-sizing: border-box;
+      }
+      .kebab-dropdown button:hover {
+        background-color: #f1f5f9;
+        color: var(--primary);
+      }
+      .kebab-dropdown button.text-danger {
+        color: var(--danger);
+      }
+      .kebab-dropdown button.text-danger:hover {
+        background-color: var(--danger-bg);
+        color: var(--danger-hover);
+      }
+
+      /* Caret thu gọn/mở rộng thư mục */
+      .btn-collapse {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+      }
+      .btn-collapse:hover {
+        background-color: #cbd5e1;
+      }
+      .caret-icon {
+        transition: transform 0.2s ease;
+      }
+      .caret-icon.collapsed {
+        transform: rotate(-90deg);
+      }
+
+      /* NÚT THAO TÁC CHÍNH */
+      .btn {
+        padding: 9px 12px;
+        border-radius: var(--radius-md);
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid transparent;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        transition: var(--transition);
+      }
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+      .btn-secondary {
+        background-color: var(--card-bg);
+        color: var(--text-muted);
+        border: 1px solid var(--border-color);
+      }
+      .btn-secondary:hover {
+        background-color: #f1f5f9;
+        color: var(--text-main);
+      }
+
+      /* MODALS */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.4);
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+      }
+      .modal-content {
+        background-color: var(--card-bg);
+        padding: 16px;
+        border-radius: var(--radius-lg);
+        width: 240px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border: 1px solid var(--border-color);
+        box-sizing: border-box;
+      }
+      .modal-content h3 {
+        margin-top: 0;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 6px;
+      }
+      .modal-content label {
+        display: block;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+        font-size: 11px;
+      }
+      .modal-content input[type="text"], .modal-content select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 6px 10px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        border-top: 1px solid var(--border-color);
+        padding-top: 10px;
+      }
+
+      /* Thiết kế chọn màu sắc */
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .color-option {
+        width: 100%;
+        padding-top: 100%;
+        border-radius: 50%;
+        border: 1.5px solid var(--border-color);
+        cursor: pointer;
+        position: relative;
+        transition: var(--transition);
+      }
+      .color-option:hover {
+        transform: scale(1.1);
+      }
+      .color-option.active::after {
+        content: "";
+        position: absolute;
+        top: 25%;
+        left: 25%;
+        width: 50%;
+        height: 50%;
+        background-color: var(--text-main);
+        border-radius: 50%;
+      }
+      #status {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        background-color: var(--primary);
+        color: white;
+        padding: 8px 12px;
+        border-radius: var(--radius-md);
+        font-size: 11.5px;
+        font-weight: 500;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+        z-index: 2000;
+        animation: fadeIn 0.2s ease-out;
+      }
+      /* Thẻ tạo Sheet mới ở dưới cùng */
+      .add-sheet-dashed-card {
+        border: 2px dashed #cbd5e1;
+        border-radius: var(--radius-lg);
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background-color: #f1f5f9;
+        transition: var(--transition);
+        margin-top: 8px;
+        user-select: none;
+        box-sizing: border-box;
+      }
+      .add-sheet-dashed-card svg {
+        color: #64748b !important;
+      }
+      .add-sheet-dashed-card:hover {
+        border-color: #94a3b8;
+        background-color: #e2e8f0;
+      }
+      .add-sheet-dashed-card:hover svg {
+        color: #334155 !important;
+      }
+
+      /* SCROLLBAR STYLE */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      
+      <div class="sidebar-header">
+        <span class="sidebar-title">Sheet Manager</span>
+      </div>
+
+      <!-- THANH TÌM KIẾM & THAO TÁC (TÍCH HỢP) -->
+      <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px;">
+        <div class="search-box" style="flex: 1; margin-bottom: 0;">
+          <input type="text" id="sheetSearch" placeholder="Tìm nhanh tên sheet..." oninput="_debouncedRenderData()">
+        </div>
+        <div style="display: flex; gap: 4px; align-items: center; flex-shrink: 0;">
+          <!-- Nút toggle chế độ chọn nhiều sheet -->
+          <button id="toggleSelectModeBtn" class="btn btn-secondary" style="padding: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; border-radius: var(--radius-md);" onclick="toggleSelectMode()" title="Bật/Tắt chế độ chọn nhiều">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <polyline points="9 11 12 14 22 4" id="selectModeCheckMark" style="display: none;"></polyline>
+            </svg>
+          </button>
+          <button class="btn btn-primary" style="font-size: 11px; padding: 0 10px; height: 28px; box-sizing: border-box; border-radius: var(--radius-md);" onclick="openCreateFolderModal()">
+            + Thư mục
+          </button>
+        </div>
+      </div>
+
+      <!-- THANH THAO TÁC HÀNG LOẠT (BULK ACTION BAR REDESIGNED) -->
+      <div id="bulkActionBar" style="display: none; align-items: center; justify-content: space-between; background-color: var(--primary); color: white; padding: 6px 12px; border-radius: var(--radius-md); margin-bottom: 10px; font-size: 11.5px; box-shadow: var(--shadow-sm); box-sizing: border-box; position: relative;">
+        <span id="bulkSelectCount" style="font-weight: 600;">Đã chọn 0 sheets</span>
+        
+        <div class="kebab-menu-container">
+          <button class="card-action-btn-quick kebab-trigger" onclick="toggleBulkKebabMenu(event)" style="color: white; border: none; background: transparent; cursor: pointer; padding: 2px; display: flex; align-items: center;" title="Thao tác hàng loạt">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="5" r="1.5"></circle>
+              <circle cx="12" cy="12" r="1.5"></circle>
+              <circle cx="12" cy="19" r="1.5"></circle>
+            </svg>
+          </button>
+          <div class="kebab-dropdown" id="bulkKebabDropdown" style="right: 0; left: auto; top: 100%; margin-top: 4px; z-index: 1050;">
+            <button onclick="openBulkChangeColorModal(); closeBulkKebabMenu();">Đổi màu</button>
+            <button onclick="openBulkMoveToFolderModal(); closeBulkKebabMenu();">Di chuyển</button>
+            <button onclick="submitBulkDuplicate(); closeBulkKebabMenu();">Nhân bản</button>
+            <button class="text-danger" onclick="triggerBulkDelete(); closeBulkKebabMenu();">Xóa tất cả</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTAINER HIỂN THỊ DANH SÁCH CARD -->
+      <div id="managerList" style="flex-grow: 1;">
+        <div style="color: var(--text-muted); text-align: center; padding: 20px 0;">Đang tải danh sách sheet...</div>
+      </div>
+
+    </div>
+
+    <!-- TOAST THÔNG BÁO -->
+    <div id="status"></div>
+
+    <!-- ================================================
+         MODAL TẠO THƯ MỤC
+         ================================================ -->
+    <div id="createFolderModal" class="modal">
+      <div class="modal-content">
+        <h3>Tạo thư mục mới</h3>
+        <label for="newFolderName">Tên thư mục</label>
+        <input type="text" id="newFolderName" placeholder="Ví dụ: Báo cáo năm">
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" onclick="closeModal('createFolderModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="submitCreateFolder()">Tạo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL ĐỔI TÊN THƯ MỤC
+         ================================================ -->
+    <div id="renameFolderModal" class="modal">
+      <div class="modal-content">
+        <h3>Đổi tên thư mục</h3>
+        <input type="hidden" id="renameFolderId">
+        <label for="editFolderName">Tên thư mục mới</label>
+        <input type="text" id="editFolderName">
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" onclick="closeModal('renameFolderModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="submitRenameFolder()">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL ĐỔI TÊN SHEET
+         ================================================ -->
+    <div id="renameSheetModal" class="modal">
+      <div class="modal-content">
+        <h3>Đổi tên Sheet</h3>
+        <input type="hidden" id="renameSheetOldName">
+        <label for="editSheetName">Tên sheet mới</label>
+        <input type="text" id="editSheetName">
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" onclick="closeModal('renameSheetModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="submitRenameSheet()">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL CHỌN MÀU TAB SHEET & THƯ MỤC
+         ================================================ -->
+    <div id="changeColorModal" class="modal">
+      <div class="modal-content">
+        <h3 id="colorModalTitle">Chọn màu Tab Sheet</h3>
+        <input type="hidden" id="colorTargetId">
+        <input type="hidden" id="colorTargetType"> <!-- 'sheet' hoặc 'folder' -->
+        <div class="color-grid">
+          <div class="color-option" style="background-color: #EAF4FF;" data-color="#EAF4FF" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #EAFBF3;" data-color="#EAFBF3" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #F3EEFF;" data-color="#F3EEFF" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #FFF2E8;" data-color="#FFF2E8" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #FFECEF;" data-color="#FFECEF" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #FFF9DB;" data-color="#FFF9DB" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #E8FAFB;" data-color="#E8FAFB" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #EEF6EC;" data-color="#EEF6EC" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #F8F4EC;" data-color="#F8F4EC" onclick="selectColorOption(this)"></div>
+          <div class="color-option" style="background-color: #F5F5F5;" data-color="#F5F5F5" onclick="selectColorOption(this)"></div>
+        </div>
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" style="margin-right: auto; padding: 4px 8px; font-size: 11px;" onclick="resetColor()">Reset màu</button>
+          <button class="btn btn-secondary" onclick="closeModal('changeColorModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="submitChangeColor()">Chọn</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL DI CHUYỂN SHEET VÀO THƯ MỤC
+         ================================================ -->
+    <div id="moveToFolderModal" class="modal">
+      <div class="modal-content">
+        <h3>Di chuyển vào thư mục</h3>
+        <input type="hidden" id="moveSheetName">
+        <label for="folderSelect">Chọn thư mục mục tiêu</label>
+        <select id="folderSelect"></select>
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" onclick="closeModal('moveToFolderModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="submitMoveToFolder()">Di chuyển</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL TẠO SHEET MỚI TÙY CHỈNH (INTEGRATED)
+         ================================================ -->
+    <div id="createCustomSheetModal" class="modal">
+      <div class="modal-content" style="width: 260px;">
+        <h3 style="color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px;">Tạo Sheet mới</h3>
+        
+        <label for="newCustomSheetName" style="display: block; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; font-size: 11px;">Tên Sheet</label>
+        <input type="text" id="newCustomSheetName" placeholder="Ví dụ: Doanh thu T7" style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; margin-bottom: 10px;">
+        
+        <label for="newCustomSheetType" style="display: block; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; font-size: 11px;">Kiểu Sheet</label>
+        <select id="newCustomSheetType" onchange="onCustomSheetTypeChange()" style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; margin-bottom: 10px;">
+          <option value="empty">Rỗng (Empty)</option>
+          <option value="template">Mẫu thiết lập (Template)</option>
+          <option value="copy">Sao chép từ Sheet khác (Copy)</option>
+        </select>
+        
+        <!-- Dropdown chọn template (Hiển thị khi chọn kiểu Template) -->
+        <div id="customSheetTemplateArea" style="display: none;">
+          <label for="customSheetTemplateSelect" style="display: block; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; font-size: 11px;">Bản mẫu Template áp dụng</label>
+          <select id="customSheetTemplateSelect" style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; margin-bottom: 10px;"></select>
+        </div>
+        
+        <!-- Dropdown chọn sheet nguồn (Hiển thị khi chọn kiểu Copy) -->
+        <div id="customSheetCopyArea" style="display: none;">
+          <label for="customSheetCopySelect" style="display: block; font-weight: 500; color: var(--text-muted); margin-bottom: 4px; font-size: 11px;">Sheet nguồn cần sao chép</label>
+          <select id="customSheetCopySelect" style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; margin-bottom: 10px;"></select>
+        </div>
+
+        <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 6px;">
+          <button class="btn btn-secondary" onclick="closeModal('createCustomSheetModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="submitCreateCustomSheet()">Tạo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL XÁC NHẬN XÓA TÙY CHỈNH (CUSTOM CONFIRM)
+         ================================================ -->
+    <div id="confirmModal" class="modal" style="z-index: 1100;">
+      <div class="modal-content">
+        <h3 id="confirmTitle" style="color: var(--danger); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px;">Xác nhận xóa</h3>
+        <p id="confirmMessage" style="font-size: 12px; color: var(--text-main); margin-bottom: 10px; line-height: 1.5; text-align: left;"></p>
+        
+        <!-- Checkbox tùy chọn xóa toàn bộ sheet con bên trong thư mục -->
+        <div id="confirmCheckboxContainer" style="display: none; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; margin-bottom: 15px; font-size: 12px; text-align: center; width: 100%;">
+          <input type="checkbox" id="deleteSheetsCheckbox" style="margin: 0; cursor: pointer; width: auto; height: auto;">
+          <label for="deleteSheetsCheckbox" style="cursor: pointer; font-weight: 500; user-select: none; display: inline-block !important; margin: 0; padding: 0; line-height: 1;">Xóa mọi sheets con bên trong</label>
+        </div>
+
+        <div class="modal-buttons" style="border-top: none; padding-top: 0;">
+          <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Hủy</button>
+          <button class="btn btn-danger" id="btnConfirmDelete">Xóa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL THÔNG BÁO TÙY CHỈNH (CUSTOM ALERT)
+         ================================================ -->
+    <div id="alertModal" class="modal" style="z-index: 1200;">
+      <div class="modal-content">
+        <h3 style="color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px;">Thông báo</h3>
+        <p id="alertMessage" style="font-size: 12px; color: var(--text-main); margin-bottom: 20px; line-height: 1.5; text-align: left;"></p>
+        <div class="modal-buttons" style="border-top: none; padding-top: 0;">
+          <button class="btn btn-primary" onclick="closeModal('alertModal')">Đồng ý</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL BỔ SUNG THÀNH PHẦN (NOTES & TAGS)
+         ================================================ -->
+    <div id="componentsModal" class="modal" style="z-index: 1050; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-content" style="max-width: 320px; width: 95%;">
+        <h3 style="color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px; font-size: 14px;">Thành phần</h3>
+        <input type="hidden" id="componentsSheetName">
+
+        <!-- Checkbox chọn loại thành phần -->
+        <div style="display: flex; gap: 15px; margin-bottom: 15px; justify-content: flex-start; align-items: center;">
+          <label style="display: flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; color: var(--text-main); margin: 0; cursor: pointer; user-select: none;">
+            <input type="checkbox" id="enableNotesCheckbox" onchange="toggleComponentsArea()" style="cursor: pointer; width: auto; height: auto; margin: 0;"> Ghi chú
+          </label>
+          <label style="display: flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; color: var(--text-main); margin: 0; cursor: pointer; user-select: none;">
+            <input type="checkbox" id="enableTagsCheckbox" onchange="toggleComponentsArea()" style="cursor: pointer; width: auto; height: auto; margin: 0;"> Tags
+          </label>
+        </div>
+
+        <!-- VÙNG CẤU HÌNH GHI CHÚ -->
+        <div id="notesConfigContainer" style="display: none; border: 1px dashed var(--border-color); padding: 8px; border-radius: var(--radius-md); margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div>
+              <h4 style="margin: 0; font-size: 11px; color: var(--primary); font-weight: 600; text-transform: uppercase; line-height: 1.2;">Danh sách Ghi chú</h4>
+              <div style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-top: 1px; text-transform: none;">(tối đa 3)</div>
+            </div>
+            <button class="btn btn-primary" id="btnAddNote" onclick="addNewNoteRow()" style="font-size: 10px; padding: 3px 6px;">+ Thêm</button>
+          </div>
+          <div id="notesList" style="display: flex; flex-direction: column; gap: 8px; max-height: none; overflow-y: visible;"></div>
+        </div>
+
+        <!-- VÙNG CẤU HÌNH TAGS -->
+        <div id="tagsConfigContainer" style="display: none; border: 1px dashed var(--border-color); padding: 8px; border-radius: var(--radius-md); margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div>
+              <h4 style="margin: 0; font-size: 11px; color: var(--primary); font-weight: 600; text-transform: uppercase; line-height: 1.2;">Danh sách Tags</h4>
+              <div style="font-size: 11px; color: var(--text-muted); font-weight: normal; margin-top: 1px; text-transform: none;">(tối đa 3)</div>
+            </div>
+            <button class="btn btn-primary" id="btnAddTag" onclick="addNewTagRow()" style="font-size: 10px; padding: 3px 6px;">+ Thêm</button>
+          </div>
+          <div id="tagsList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+        </div>
+
+        <div class="modal-buttons" style="border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px;">
+          <button class="btn btn-secondary" onclick="closeModal('componentsModal')">Hủy</button>
+          <button class="btn btn-primary" onclick="submitSaveComponents()">Áp dụng</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         MODAL HIỂN THỊ CHI TIẾT GHI CHÚ
+         ================================================ -->
+    <div id="noteDisplayModal" class="modal" style="z-index: 1300;">
+      <div class="modal-content" style="max-width: 260px; width: 90%; text-align: left;">
+        <h3 id="noteDisplayTitle" style="color: var(--primary); border-bottom: 1px solid var(--border-color); padding-bottom: 6px; margin-bottom: 10px; font-size: 13px;">Ghi chú</h3>
+        <p id="noteDisplayText" style="font-size: 11.5px; color: var(--text-main); margin-bottom: 15px; line-height: 1.5; white-space: pre-wrap; word-break: break-word;"></p>
+        <div class="modal-buttons" style="border-top: none; padding-top: 0;">
+          <button class="btn btn-primary" onclick="closeModal('noteDisplayModal')">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      var rootOrder = [];
+      var folders = {};
+      var sheetDetails = {};
+      var templates = []; // Bổ sung để lưu trữ danh sách bản mẫu từ Backend
+      var templateBindings = {}; // Lưu liên kết bản mẫu của từng sheet
+      var sheetComponents = {}; // Lưu trữ thành phần bổ sung của từng sheet
+      var selectedSheets = {}; // Theo dõi danh sách sheet được chọn hàng loạt
+      var collapsedFolders = {}; // Theo dõi thư mục bị đóng: { folderId: true }
+      var isSelectMode = false; // Bật/Tắt chế độ chọn nhiều sheet
+      
+      var pendingDeleteAction = null;
+      var selectedColorHex = null;
+
+      // ---- PERFORMANCE OPTIMIZATION UTILITIES ----
+      var RENDER_CHUNK_SIZE = 30;
+      var _renderCache = {};
+      function _clearRenderCache() { _renderCache = {}; }
+      function _debounce(fn, wait) {
+        var timer;
+        return function() {
+          var args = arguments, ctx = this;
+          clearTimeout(timer);
+          timer = setTimeout(function() { fn.apply(ctx, args); }, wait);
+        };
+      }
+      var _debouncedRenderData = _debounce(function() { renderData(); }, 200);
+
+      // Icon SVG của con mắt (hiển thị) và con mắt gạch chéo (ẩn)
+      var eyeIcon = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+          <circle cx="12" cy="12" r="3"></circle>
+        </svg>
+      `;
+      var eyeOffIcon = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted);">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+          <line x1="1" y1="1" x2="23" y2="23"></line>
+        </svg>
+      `;
+
+      // Hàm ánh xạ màu tab đậm về màu pastel
+      function getPastelColor(darkColor) {
+        if (!darkColor) return '';
+        var key = darkColor.toLowerCase();
+        var DARK_TO_PASTEL = {
+          '#2563eb': '#EAF4FF',
+          '#059669': '#EAFBF3',
+          '#7c3aed': '#F3EEFF',
+          '#ea580c': '#FFF2E8',
+          '#e11d48': '#FFECEF',
+          '#ca8a04': '#FFF9DB',
+          '#0891b2': '#E8FAFB',
+          '#4d7c0f': '#EEF6EC',
+          '#a16207': '#F8F4EC',
+          '#525252': '#F5F5F5'
+        };
+        return DARK_TO_PASTEL[key] || darkColor;
+      }
+
+      window.onload = function() {
+        if (window.self !== window.top) {
+          document.body.classList.add('in-iframe');
+        }
+        refreshData();
+        startRealtimeSync();
+      };
+
+      // Đóng tất cả kebab menus nếu bấm ngoài vùng chứa của chúng
+      window.addEventListener('click', function(e) {
+        var dropdowns = document.querySelectorAll('.kebab-dropdown');
+        dropdowns.forEach(function(d) {
+          if (!d.parentNode.contains(e.target)) {
+            d.style.display = 'none';
+            var card = d.closest('.sheet-card') || d.closest('.folder-card');
+            if (card) card.classList.remove('active-menu');
+          }
+        });
+      });
+
+      // Gọi API qua Single Entry Point
+      function callApi(action, data, onSuccess, onFailure) {
+        var mutationActions = [
+          'createCustomSheet', 'createFolder', 'deleteFolder', 'renameFolder', 
+          'changeFolderColor', 'duplicateFolder', 'moveSheetToFolder', 
+          'renameSheet', 'duplicateSheet', 'deleteSheet', 'changeSheetColor', 
+          'toggleSheetVisibility', 'toggleFolderVisibility', 'saveSheetOrder', 
+          'saveSheetComponents', 'changeBulkSheetsColor', 'deleteBulkSheets', 
+          'moveBulkSheetsToFolder', 'duplicateBulkSheets',
+          'saveHeader', 'deleteHeader', 'saveTemplate', 'deleteTemplate', 
+          'applyTemplate', 'saveTemplateDatabaseConfig', 'saveDefaultFormats',
+          'protectDatabaseSheets', 'unprotectDatabaseSheets'
+        ];
+
+        google.script.run
+          .withSuccessHandler(function(response) {
+            if (onSuccess) onSuccess(response);
+            
+            if (mutationActions.indexOf(action) > -1 && response && response.success) {
+              try {
+                window.parent.postMessage({ type: 'DATA_CHANGED' }, '*');
+              } catch(e) {}
+            }
+          })
+          .withFailureHandler(function(err) {
+            var errMsg = err.toString();
+            if (errMsg.indexOf("Bạn không có quyền truy cập") !== -1) {
+              google.script.run.showAccessDeniedAlert();
+              google.script.host.close();
+              return;
+            }
+            if (onFailure) {
+              onFailure(err);
+            } else {
+              showToast("Lỗi kết nối máy chủ: " + errMsg);
+            }
+          })
+          .handleApiRequest({ action: action, data: data });
+      }
+
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'REFRESH_DATA') {
+          refreshData();
+        }
+      });
+
+      function showToast(message) {
+        var toast = document.getElementById('status');
+        toast.innerText = message;
+        toast.style.display = "block";
+        setTimeout(function() {
+          toast.style.display = "none";
+        }, 3000);
+      }
+
+      function openModal(id) {
+        document.getElementById(id).style.display = "flex";
+      }
+
+      // Đóng các modal chính
+      function closeModal(id) {
+        document.getElementById(id).style.display = "none";
+      }
+
+      function showCustomAlert(message) {
+        document.getElementById('alertMessage').innerText = message;
+        openModal('alertModal');
+      }
+
+      function showCustomConfirm(title, message, onConfirm, showCheckbox) {
+        document.getElementById('confirmTitle').innerText = title;
+        document.getElementById('confirmMessage').innerText = message;
+        
+        var checkContainer = document.getElementById('confirmCheckboxContainer');
+        if (showCheckbox) {
+          checkContainer.style.display = "flex";
+          document.getElementById('deleteSheetsCheckbox').checked = false;
+        } else {
+          checkContainer.style.display = "none";
+        }
+
+        var btn = document.getElementById('btnConfirmDelete');
+        btn.onclick = function() {
+          onConfirm();
+          closeModal('confirmModal');
+        };
+        openModal('confirmModal');
+      }
+
+      // Biến quản lý đồng bộ thời gian thực
+      var lastCheckedTimestamp = null;
+
+      function updateLocalSyncTimestamp() {
+        callApi('getLastChangedTimestamp', null, function(ts) {
+          lastCheckedTimestamp = ts || "0";
+        });
+      }
+
+      var _debouncedRefreshData = _debounce(function() { refreshData(); }, 300);
+
+      function startRealtimeSync() {
+        setInterval(function() {
+          if (lastCheckedTimestamp === null) return;
+          callApi('getLastChangedTimestamp', null, function(ts) {
+            if (ts && ts !== lastCheckedTimestamp) {
+              console.log("Phát hiện thay đổi từ người dùng khác, tự động đồng bộ...");
+              lastCheckedTimestamp = ts;
+              _debouncedRefreshData();
+            }
+          });
+        }, 5000);
+      }
+
+      // Tải lại dữ liệu từ Server
+      function refreshData() {
+        _clearRenderCache();
+        callApi('getSheetManagerData', null,
+          function(response) {
+            if (response && response.success) {
+              rootOrder = response.rootOrder || [];
+              folders = response.folders || {};
+              sheetDetails = response.sheetDetails || {};
+              templates = response.templates || []; // Lưu danh sách templates
+              templateBindings = response.templateBindings || {}; // Lưu template bindings
+              sheetComponents = response.sheetComponents || {}; // Lưu sheet components
+              clearBulkSelection(); // Xóa chọn hàng loạt khi reload
+              renderData();
+              updateLocalSyncTimestamp();
+            } else {
+              document.getElementById('managerList').innerHTML = "<div style='color: var(--danger); text-align: center; padding: 20px 0;'>" + (response ? response.message : "Phản hồi rỗng. Hãy kiểm tra xem hàm handleApiRequest ở file đích đã có từ khóa 'return' chưa.") + "</div>";
+            }
+          },
+          function(err) {
+            document.getElementById('managerList').innerHTML = `<div style="color: var(--danger); text-align: center; padding: 20px 0; font-size: 0.9rem;">
+              Lỗi kết nối hệ thống.<br>
+              <small style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 5px; line-height: 1.4;">
+                Chi tiết lỗi: ${err.toString()}<br>
+                Gợi ý: Nếu bạn sử dụng trình duyệt Brave/Safari hoặc đăng nhập nhiều tài khoản Google cùng lúc, hãy tắt Brave Shields (Lion icon), cho phép cookie bên thứ ba hoặc dùng cửa sổ ẩn danh.
+              </small>
+            </div>`;
+          }
+        );
+      }
+
+      // Vẽ dữ liệu danh sách card
+      function renderData() {
+        var container = document.getElementById('managerList');
+        var searchVal = document.getElementById('sheetSearch').value.trim().toLowerCase();
+        
+        if (rootOrder.length === 0) {
+          container.innerHTML = "<div style='color: var(--text-muted); text-align: center; padding: 20px 0;'>Bảng tính trống hoặc chưa đồng bộ được.</div>";
+          return;
+        }
+
+        var html = "";
+        
+        rootOrder.forEach(function(item, idx) {
+          var isFirst = (idx === 0);
+          var isLast = (idx === rootOrder.length - 1);
+
+          if (item.type === 'folder') {
+            var folder = folders[item.id];
+            if (!folder) return;
+
+            // Nếu tìm kiếm, kiểm tra xem thư mục có khớp hoặc chứa sheet con nào khớp không
+            var isFolderMatch = folder.name.toLowerCase().indexOf(searchVal) > -1;
+            var matchedChildSheets = (folder.sheetNames || []).filter(function(name) {
+              return name.toLowerCase().indexOf(searchVal) > -1;
+            });
+
+            if (searchVal && !isFolderMatch && matchedChildSheets.length === 0) {
+              return; // Ẩn thư mục nếu không khớp kết quả tìm kiếm
+            }
+
+            var isCollapsed = !!collapsedFolders[item.id];
+
+            // Xác định xem thư mục có ẩn hoàn toàn không (nếu tất cả sheet con của nó đều ẩn)
+            var isFolderHidden = false;
+            if (folder.sheetNames && folder.sheetNames.length > 0) {
+              isFolderHidden = folder.sheetNames.every(function(name) {
+                var details = sheetDetails[name];
+                return details && details.isHidden;
+              });
+            }
+
+            var count = folder.sheetNames ? folder.sheetNames.length : 0;
+            var folderBgStyle = folder.color ? `style="background-color: ${folder.color};"` : '';
+
+            var folderCheckboxHtml = '';
+            var folderOrderButtonsHtml = '';
+
+            if (isSelectMode) {
+              var allChecked = isFolderAllChecked(folder);
+              var folderCheckedStr = allChecked ? 'checked' : '';
+              folderCheckboxHtml = `<input type="checkbox" class="folder-select-checkbox" data-id="${folder.id}" ${folderCheckedStr} onclick="event.stopPropagation(); onFolderCheckboxClick(this, '${folder.id}');" style="margin-right: 6px; cursor: pointer; width: 12px; height: 12px; vertical-align: middle;">`;
+            } else {
+              folderOrderButtonsHtml = `
+                <div class="order-buttons">
+                  <button class="order-btn" onclick="moveRootItem(event, '${item.id}', 'up')" ${isFirst ? 'disabled' : ''} title="Di chuyển lên">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                  </button>
+                  <button class="order-btn" onclick="moveRootItem(event, '${item.id}', 'down')" ${isLast ? 'disabled' : ''} title="Di chuyển xuống">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              `;
+            }
+
+            html += `
+              <div class="folder-block" data-id="${item.id}" data-type="folder">
+                <div class="folder-card" ${folderBgStyle} onclick="onFolderCardClick(event, '${item.id}')">
+                  <button class="btn-collapse" onclick="toggleFolderCollapse('${item.id}')" title="Thu gọn / Mở rộng">
+                    <svg class="caret-icon ${isCollapsed ? 'collapsed' : ''}" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  ${folderOrderButtonsHtml}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--text-main); flex-shrink: 0; margin-right: 4px;">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  <span class="card-title" onclick="if(!isSelectMode) toggleFolderCollapse('${item.id}')">
+                    ${folderCheckboxHtml}
+                    <span class="folder-name-text">${escapeHtml(folder.name)}</span>
+                    <span class="sheet-count">(${count})</span>
+                  </span>
+                  
+                  <div style="display: flex; align-items: center; gap: 4px; position: relative;">
+                    <!-- Nút con mắt ẩn/hiện cả folder -->
+                    <button class="card-action-btn-quick" onclick="triggerToggleFolderVisibility(event, '${folder.id}')" title="${isFolderHidden ? 'Hiển thị toàn bộ thư mục' : 'Ẩn toàn bộ thư mục'}">
+                      ${isFolderHidden ? eyeOffIcon : eyeIcon}
+                    </button>
+                    
+                    <!-- Kebab menu tác vụ thư mục -->
+                    <div class="kebab-menu-container">
+                      <button class="card-action-btn-quick kebab-trigger" onclick="toggleKebabMenu(event, '${folder.id}')" title="Tác vụ thư mục">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <circle cx="12" cy="5" r="1.5"></circle>
+                          <circle cx="12" cy="12" r="1.5"></circle>
+                          <circle cx="12" cy="19" r="1.5"></circle>
+                        </svg>
+                      </button>
+                      <div class="kebab-dropdown" id="kebab_${folder.id}">
+                        <button onclick="openRenameFolderModal('${folder.id}', '${escapeJsString(folder.name)}')">Đổi tên</button>
+                        <button onclick="openChangeColorModal('${folder.id}', '${folder.color || ''}', 'folder')">Đổi màu</button>
+                        <button onclick="triggerDuplicateFolder('${folder.id}')">Nhân bản</button>
+                        <button class="text-danger" onclick="triggerDeleteFolder('${folder.id}')">Xóa thư mục</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="folder-sheets-container" style="display: ${isCollapsed ? 'none' : 'flex'};">
+            `;
+
+            // Vẽ các sheet con trong thư mục
+            var innerSheets = folder.sheetNames || [];
+            if (innerSheets.length === 0) {
+              html += `<div style="color: var(--text-muted); font-size: 11px; padding: 4px 6px; font-style: italic;">Thư mục trống</div>`;
+            } else {
+              innerSheets.forEach(function(sheetName, subIdx) {
+                if (searchVal && sheetName.toLowerCase().indexOf(searchVal) === -1) {
+                  return;
+                }
+
+                var subIsFirst = (subIdx === 0);
+                var subIsLast = (subIdx === innerSheets.length - 1);
+                var sheet = sheetDetails[sheetName] || { name: sheetName, isHidden: false, color: null };
+                
+                html += renderSheetCardHtml(sheet, subIsFirst, subIsLast, 'sub', folder.id);
+              });
+            }
+
+            html += `
+                </div>
+              </div>
+            `;
+          } else {
+            // Sheet độc lập ở root
+            var sheetName = item.name;
+            if (searchVal && sheetName.toLowerCase().indexOf(searchVal) === -1) {
+              return;
+            }
+            var sheet = sheetDetails[sheetName] || { name: sheetName, isHidden: false, color: null };
+            
+            html += renderSheetCardHtml(sheet, isFirst, isLast, 'root', null);
+          }
+        });
+
+        // Bổ sung thẻ Thêm Sheet mới nét liền chỉ chứa dấu cộng ở dưới cùng danh sách
+        html += `
+          <div class="add-sheet-dashed-card" onclick="openCreateCustomSheetModal()" title="Thêm Sheet mới">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--text-muted);">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </div>
+        `;
+
+        container.innerHTML = html;
+      }
+
+      // Render mã HTML cho thẻ Sheet Card con
+      function renderSheetCardHtml(sheet, isFirst, isLast, renderType, parentFolderId) {
+        var hiddenBadge = sheet.isHidden ? `<span class="sheet-hidden-badge">Đang ẩn</span>` : '';
+        var escapedId = escapeDropdownId(sheet.name);
+        var isChecked = selectedSheets[sheet.name] ? 'checked' : '';
+        var comp = sheetComponents[sheet.name] || { notesEnabled: false, tagsEnabled: false, notes: [], tags: [] };
+
+        // Đổi màu nền của cả sheet-card giống như folder card bằng màu pastel tương ứng màu tab đậm
+        var pastelBg = getPastelColor(sheet.color);
+        var sheetBgStyle = pastelBg ? `style="background-color: ${pastelBg};"` : '';
+
+        var orderButtonsHtml = '';
+        var checkboxHtml = '';
+
+        if (isSelectMode) {
+          checkboxHtml = `<input type="checkbox" class="sheet-select-checkbox" data-name="${escapeHtml(sheet.name)}" ${isChecked} onclick="event.stopPropagation(); onSheetCheckboxClick(this);" style="margin-right: 6px; cursor: pointer; width: 12px; height: 12px; vertical-align: middle;">`;
+        } else {
+          var moveOnClickUp = (renderType === 'root')
+            ? `moveRootItem(event, '${escapeJsString(sheet.name)}', 'up')`
+            : `moveSubItem(event, '${escapeJsString(sheet.name)}', 'up', '${parentFolderId}')`;
+
+          var moveOnClickDown = (renderType === 'root')
+            ? `moveRootItem(event, '${escapeJsString(sheet.name)}', 'down')`
+            : `moveSubItem(event, '${escapeJsString(sheet.name)}', 'down', '${parentFolderId}')`;
+
+          orderButtonsHtml = `
+            <div class="order-buttons">
+              <button class="order-btn" onclick="${moveOnClickUp}" ${isFirst ? 'disabled' : ''} title="Di chuyển lên">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+              <button class="order-btn" onclick="${moveOnClickDown}" ${isLast ? 'disabled' : ''} title="Di chuyển xuống">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="sheet-card" data-name="${sheet.name}" data-type="sheet" ${sheetBgStyle} onclick="onSheetCardClick(event, '${escapeJsString(sheet.name)}')">
+            <div class="card-header-row">
+              ${orderButtonsHtml}
+              <span class="card-title">
+                ${checkboxHtml}
+                <span class="folder-name-text">${escapeHtml(sheet.name)}</span>
+                ${hiddenBadge}
+              </span>
+              
+              <div style="display: flex; align-items: center; gap: 4px; position: relative;">
+                <!-- Các icon Ghi chú nếu có -->
+                ${renderNotesIcons(sheet.name, comp)}
+
+                <!-- Nút con mắt ẩn/hiện nhanh sheet -->
+                <button class="card-action-btn-quick" onclick="triggerToggleVisibility('${escapeJsString(sheet.name)}')" title="${sheet.isHidden ? 'Hiển thị sheet' : 'Ẩn sheet'}">
+                  ${sheet.isHidden ? eyeOffIcon : eyeIcon}
+                </button>
+                
+                <!-- Kebab Menu (3 chấm dọc) chứa các tính năng còn lại -->
+                <div class="kebab-menu-container">
+                  <button class="card-action-btn-quick kebab-trigger" onclick="toggleKebabMenu(event, '${escapedId}')" title="Các tùy chọn sheet">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <circle cx="12" cy="5" r="1.5"></circle>
+                      <circle cx="12" cy="12" r="1.5"></circle>
+                      <circle cx="12" cy="19" r="1.5"></circle>
+                    </svg>
+                  </button>
+                  <div class="kebab-dropdown" id="kebab_${escapedId}">
+                    <button onclick="openRenameSheetModal('${escapeJsString(sheet.name)}')">Đổi tên</button>
+                    <button onclick="openChangeColorModal('${escapeJsString(sheet.name)}', '${sheet.color || ''}', 'sheet')">Đổi màu</button>
+                    <button onclick="openMoveToFolderModal('${escapeJsString(sheet.name)}', '${parentFolderId || ''}')">Di chuyển</button>
+                    <button onclick="triggerDuplicateSheet('${escapeJsString(sheet.name)}')">Nhân bản</button>
+                    <button onclick="openComponentsModal('${escapeJsString(sheet.name)}')">Thành phần</button>
+                    <button class="text-danger" onclick="triggerDeleteSheet('${escapeJsString(sheet.name)}')">Xóa sheet</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Hiển thị các tag nếu có -->
+            <div class="sheet-tags-row" style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; padding-left: ${isSelectMode ? '18px' : '36px'};">
+              ${renderTagsList(comp, sheet.name)}
+            </div>
+          </div>
+        `;
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return str.toString().replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#039;");
+      }
+
+      function escapeDropdownId(name) {
+        return name.replace(/[^a-zA-Z0-9]/g, '_');
+      }
+
+      function escapeJsString(str) {
+        return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+      }
+
+      function isFolderAllChecked(folder) {
+        if (!folder || !folder.sheetNames || folder.sheetNames.length === 0) return false;
+        return folder.sheetNames.every(function(name) {
+          return !!selectedSheets[name];
+        });
+      }
+
+      function onSheetCardClick(event, name) {
+        if (!isSelectMode) return;
+        if (event.target.closest('.card-action-btn-quick') || 
+            event.target.closest('.kebab-menu-container') || 
+            event.target.closest('.note-badge-btn') ||
+            event.target.closest('.sheet-tags-row')) {
+          return;
+        }
+        var checkbox = event.currentTarget.querySelector('.sheet-select-checkbox');
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          onSheetCheckboxClick(checkbox);
+        }
+      }
+
+      function onFolderCardClick(event, folderId) {
+        if (!isSelectMode) return;
+        if (event.target.closest('.btn-collapse') || 
+            event.target.closest('.card-action-btn-quick') || 
+            event.target.closest('.kebab-menu-container')) {
+          return;
+        }
+        var checkbox = event.currentTarget.querySelector('.folder-select-checkbox');
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          onFolderCheckboxClick(checkbox, folderId);
+        }
+      }
+
+      function onFolderCheckboxClick(checkbox, folderId) {
+        var folder = folders[folderId];
+        if (!folder || !folder.sheetNames) return;
+        
+        var isChecked = checkbox.checked;
+        folder.sheetNames.forEach(function(name) {
+          if (isChecked) {
+            selectedSheets[name] = true;
+          } else {
+            delete selectedSheets[name];
+          }
+        });
+        
+        updateBulkActionBar();
+        
+        var folderBlock = document.querySelector(`.folder-block[data-id="${folderId}"]`);
+        if (folderBlock) {
+          var childCheckboxes = folderBlock.querySelectorAll('.sheet-select-checkbox');
+          childCheckboxes.forEach(function(cb) {
+            cb.checked = isChecked;
+          });
+        }
+      }
+
+      function updateFolderCheckboxesState() {
+        var folderBlocks = document.querySelectorAll('.folder-block');
+        folderBlocks.forEach(function(block) {
+          var folderId = block.getAttribute('data-id');
+          var folder = folders[folderId];
+          if (folder) {
+            var allChecked = isFolderAllChecked(folder);
+            var folderCheckbox = block.querySelector('.folder-select-checkbox');
+            if (folderCheckbox) {
+              folderCheckbox.checked = allChecked;
+            }
+          }
+        });
+      }
+
+      function toggleFolderCollapse(folderId) {
+        collapsedFolders[folderId] = !collapsedFolders[folderId];
+        renderData();
+      }
+
+      // Logic mở/tắt menu Kebab ba chấm
+      function toggleKebabMenu(event, id) {
+        event.stopPropagation();
+        var targetId = 'kebab_' + id;
+        var dropdown = document.getElementById(targetId);
+        if (!dropdown) return;
+        
+        // Đóng các dropdown khác và gỡ bỏ active-menu class trên các card khác
+        var allDropdowns = document.querySelectorAll('.kebab-dropdown');
+        allDropdowns.forEach(function(d) {
+          if (d.id !== targetId) {
+            d.style.display = 'none';
+            var card = d.closest('.sheet-card') || d.closest('.folder-card');
+            if (card) card.classList.remove('active-menu');
+          }
+        });
+        
+        // Toggle card z-index active status
+        var parentCard = dropdown.closest('.sheet-card') || dropdown.closest('.folder-card');
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+          if (parentCard) parentCard.classList.remove('active-menu');
+        } else {
+          dropdown.style.display = 'block';
+          if (parentCard) parentCard.classList.add('active-menu');
+        }
+      }
+
+      /* ================================================
+         HIỆU ỨNG HOẠT HỌA DI CHUYỂN UP / DOWN (FLIP SWAP)
+         ================================================ */
+      function moveRootItem(event, itemId, direction) {
+        event.stopPropagation();
+        var index = rootOrder.findIndex(function(item) {
+          return (item.type === 'folder' && item.id === itemId) || (item.type === 'sheet' && item.name === itemId);
+        });
+        if (index === -1) return;
+
+        var targetIndex = (direction === 'up') ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= rootOrder.length) return;
+
+        animateAndSwap(index, targetIndex, 'root');
+      }
+
+      function moveSubItem(event, sheetName, direction, folderId) {
+        event.stopPropagation();
+        var folder = folders[folderId];
+        if (!folder || !folder.sheetNames) return;
+
+        var index = folder.sheetNames.indexOf(sheetName);
+        if (index === -1) return;
+
+        var targetIndex = (direction === 'up') ? index - 1 : index + 1;
+        if (targetIndex < 0 || targetIndex >= folder.sheetNames.length) return;
+
+        animateAndSwap(index, targetIndex, 'sub', folderId);
+      }
+
+      function animateAndSwap(index, targetIndex, moveType, folderId) {
+        var container, cards, currentCard, targetCard;
+
+        if (moveType === 'root') {
+          container = document.getElementById('managerList');
+          cards = Array.from(container.children).filter(function(child) {
+            return child.classList.contains('folder-block') || (child.classList.contains('sheet-card') && !child.closest('.folder-sheets-container'));
+          });
+        } else {
+          var folderBlocks = document.querySelectorAll('.folder-block');
+          var block = Array.from(folderBlocks).find(function(b) { return b.getAttribute('data-id') === folderId; });
+          if (!block) return;
+          container = block.querySelector('.folder-sheets-container');
+          cards = Array.from(container.children).filter(function(child) {
+            return child.classList.contains('sheet-card');
+          });
+        }
+
+        currentCard = cards[index];
+        targetCard = cards[targetIndex];
+
+        if (currentCard && targetCard) {
+          var offset = targetCard.offsetTop - currentCard.offsetTop;
+          
+          currentCard.style.pointerEvents = 'none';
+          targetCard.style.pointerEvents = 'none';
+          
+          currentCard.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+          currentCard.style.transform = 'translateY(' + offset + 'px)';
+          
+          targetCard.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+          targetCard.style.transform = 'translateY(' + (-offset) + 'px)';
+          
+          setTimeout(function() {
+            currentCard.style.transform = '';
+            currentCard.style.transition = '';
+            currentCard.style.pointerEvents = '';
+            
+            targetCard.style.transform = '';
+            targetCard.style.transition = '';
+            targetCard.style.pointerEvents = '';
+            
+            if (moveType === 'root') {
+              var temp = rootOrder[index];
+              rootOrder[index] = rootOrder[targetIndex];
+              rootOrder[targetIndex] = temp;
+            } else {
+              var folder = folders[folderId];
+              var temp = folder.sheetNames[index];
+              folder.sheetNames[index] = folder.sheetNames[targetIndex];
+              folder.sheetNames[targetIndex] = temp;
+            }
+            
+            renderData();
+            saveOrderToServer();
+          }, 250);
+        } else {
+          if (moveType === 'root') {
+            var temp = rootOrder[index];
+            rootOrder[index] = rootOrder[targetIndex];
+            rootOrder[targetIndex] = temp;
+          } else {
+            var folder = folders[folderId];
+            var temp = folder.sheetNames[index];
+            folder.sheetNames[index] = folder.sheetNames[targetIndex];
+            folder.sheetNames[targetIndex] = temp;
+          }
+          renderData();
+          saveOrderToServer();
+        }
+      }
+
+      function saveOrderToServer() {
+        callApi('saveSheetOrder', { rootOrder: rootOrder, folders: folders },
+          function(response) {
+            if (!response.success) {
+              showCustomAlert("Lỗi khi lưu thứ tự: " + response.message);
+              refreshData();
+            }
+          },
+          function(err) {
+            showCustomAlert("Lỗi kết nối lưu thứ tự: " + err.toString());
+            refreshData();
+          }
+        );
+      }
+
+      /* ================================================
+         LOGIC TƯƠNG TÁC THƯ MỤC
+         ================================================ */
+      function openCreateFolderModal() {
+        document.getElementById('newFolderName').value = "";
+        openModal('createFolderModal');
+      }
+
+      function submitCreateFolder() {
+        var name = document.getElementById('newFolderName').value.trim();
+        if (!name) {
+          showCustomAlert("Tên thư mục không được để trống!");
+          return;
+        }
+        closeModal('createFolderModal');
+        showToast("Đang tạo thư mục...");
+        callApi('createFolder', name,
+          function(res) {
+            if (res) {
+              showToast(res.message);
+              if (res.success) refreshData();
+            } else {
+              showToast("Lỗi: Phản hồi rỗng.");
+            }
+          }
+        );
+      }
+
+      function openRenameFolderModal(id, name) {
+        document.getElementById('renameFolderId').value = id;
+        document.getElementById('editFolderName').value = name;
+        openModal('renameFolderModal');
+      }
+
+      function submitRenameFolder() {
+        var id = document.getElementById('renameFolderId').value;
+        var name = document.getElementById('editFolderName').value.trim();
+        if (!name) {
+          showCustomAlert("Tên thư mục không được để trống!");
+          return;
+        }
+        closeModal('renameFolderModal');
+        
+        // Optimistic update locally
+        if (folders[id]) {
+          folders[id].name = name;
+          renderData();
+        }
+
+        callApi('renameFolder', { folderId: id, newName: name },
+          function(res) {
+            if (!res.success) {
+              showCustomAlert(res.message);
+              refreshData();
+            }
+          }
+        );
+      }
+
+      function triggerDeleteFolder(id) {
+        var folder = folders[id];
+        var name = folder ? folder.name : "";
+        showCustomConfirm(
+          "Xóa thư mục",
+          "Bạn có chắc chắn muốn xóa thư mục '" + name + "'? Theo mặc định các sheet con sẽ được đưa ra ngoài cấp Root.",
+          function() {
+            var deleteSheets = document.getElementById('deleteSheetsCheckbox').checked;
+            showToast("Đang xóa thư mục...");
+            callApi('deleteFolder', { folderId: id, deleteSheets: deleteSheets },
+              function(res) {
+                if (res) {
+                  showToast(res.message);
+                  if (res.success) refreshData();
+                } else {
+                  showToast("Lỗi: Phản hồi rỗng.");
+                }
+              }
+            );
+          },
+          true // Hiển thị checkbox lựa chọn xóa toàn bộ sheet con
+        );
+      }
+
+      function triggerToggleFolderVisibility(event, folderId) {
+        event.stopPropagation();
+        
+        // Optimistic update locally
+        var folder = folders[folderId];
+        if (folder && folder.sheetNames) {
+          var currentAllHidden = folder.sheetNames.every(function(name) {
+            var details = sheetDetails[name];
+            return details && details.isHidden;
+          });
+          
+          folder.sheetNames.forEach(function(name) {
+            if (sheetDetails[name]) {
+              sheetDetails[name].isHidden = !currentAllHidden;
+            }
+          });
+          renderData();
+        }
+
+        callApi('toggleFolderVisibility', folderId,
+          function(res) {
+            if (!res.success) {
+              showCustomAlert(res.message);
+              refreshData();
+            }
+          }
+        );
+      }
+
+      function triggerDuplicateFolder(folderId) {
+        showToast("Đang nhân bản thư mục...");
+        callApi('duplicateFolder', folderId,
+          function(res) {
+            showToast(res.message);
+            if (res.success) refreshData();
+          }
+        );
+      }
+
+      /* ================================================
+         LOGIC TƯƠNG TÁC SHEET
+         ================================================ */
+      function openRenameSheetModal(name) {
+        document.getElementById('renameSheetOldName').value = name;
+        document.getElementById('editSheetName').value = name;
+        openModal('renameSheetModal');
+      }
+
+      function submitRenameSheet() {
+        var oldName = document.getElementById('renameSheetOldName').value;
+        var newName = document.getElementById('editSheetName').value.trim();
+        if (!newName) {
+          showCustomAlert("Tên sheet không được để trống!");
+          return;
+        }
+        closeModal('renameSheetModal');
+        showToast("Đang đổi tên sheet...");
+        callApi('renameSheet', { oldName: oldName, newName: newName },
+          function(res) {
+            showToast(res.message);
+            if (res.success) refreshData();
+          }
+        );
+      }
+
+      function triggerDuplicateSheet(name) {
+        showToast("Đang sao chép sheet...");
+        callApi('duplicateSheet', name,
+          function(res) {
+            showToast(res.message);
+            if (res.success) refreshData();
+          }
+        );
+      }
+
+      function triggerToggleVisibility(name) {
+        // Optimistic update locally
+        if (sheetDetails[name]) {
+          sheetDetails[name].isHidden = !sheetDetails[name].isHidden;
+          renderData();
+        }
+
+        callApi('toggleSheetVisibility', name,
+          function(res) {
+            if (!res.success) {
+              showCustomAlert(res.message);
+              refreshData();
+            }
+          }
+        );
+      }
+
+      function triggerDeleteSheet(name) {
+        callApi('checkDatabaseSheets', { sheetNames: [name] }, function(res) {
+          var msg = "CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN sheet '" + name + "' không? Hành động này sẽ xóa hoàn toàn các tab dữ liệu vật lý và không thể khôi phục.";
+          if (res && res.success && res.dbSheets && res.dbSheets.length > 0) {
+            var dbInfo = res.dbSheets[0];
+            msg = "CẢNH BÁO: Sheet '" + name + "' này là DATABASE của bản mẫu '" + dbInfo.templateName + "'. Nếu xóa sheet này đi thì sẽ xóa luôn cái mối quan hệ database trong cái bản mẫu đó. Bạn có chắc chắn muốn XÓA VĨNH VIỄN không?";
+          }
+          
+          showCustomConfirm(
+            "Xóa Sheet vĩnh viễn",
+            msg,
+            function() {
+              showToast("Đang xóa sheet...");
+              callApi('deleteSheet', name,
+                function(resDel) {
+                  showToast(resDel.message);
+                  if (resDel.success) refreshData();
+                }
+              );
+            },
+            false
+          );
+        }, function(err) {
+          // Fallback
+          showCustomConfirm(
+            "Xóa Sheet vĩnh viễn",
+            "CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN sheet '" + name + "' không? Hành động này sẽ xóa hoàn toàn các tab dữ liệu vật lý và không thể khôi phục.",
+            function() {
+              showToast("Đang xóa sheet...");
+              callApi('deleteSheet', name,
+                function(resDel) {
+                  showToast(resDel.message);
+                  if (resDel.success) refreshData();
+                }
+              );
+            },
+            false
+          );
+        });
+      }
+
+      /* ================================================
+         LOGIC MODAL ĐỔI MÀU SHEET & THƯ MỤC
+         ================================================ */
+      function openChangeColorModal(targetId, currentColor, targetType) {
+        document.getElementById('colorTargetId').value = targetId;
+        document.getElementById('colorTargetType').value = targetType;
+        
+        // Chuyển màu tab Google Sheets đậm về pastel khi so sánh active
+        var mappedPastelColor = (targetType === 'sheet') ? getPastelColor(currentColor) : currentColor;
+        selectedColorHex = mappedPastelColor || null;
+
+        var titleText = (targetType === 'sheet') ? 'Chọn màu Tab Sheet' : 'Chọn màu nền Thư mục';
+        if (targetType === 'bulk') {
+          titleText = 'Đổi màu hàng loạt (' + Object.keys(selectedSheets).length + ' sheets)';
+        }
+        document.getElementById('colorModalTitle').innerText = titleText;
+        
+        var options = document.querySelectorAll('.color-option');
+        options.forEach(function(opt) {
+          opt.classList.remove('active');
+          if (opt.getAttribute('data-color') === selectedColorHex) {
+            opt.classList.add('active');
+          }
+        });
+
+        openModal('changeColorModal');
+      }
+
+      function selectColorOption(el) {
+        var options = document.querySelectorAll('.color-option');
+        options.forEach(function(opt) { opt.classList.remove('active'); });
+        
+        el.classList.add('active');
+        selectedColorHex = el.getAttribute('data-color');
+      }
+
+      function resetColor() {
+        selectedColorHex = null;
+        submitChangeColor();
+      }
+
+      function submitChangeColor() {
+        var targetId = document.getElementById('colorTargetId').value;
+        var targetType = document.getElementById('colorTargetType').value;
+        closeModal('changeColorModal');
+
+        if (targetType === 'bulk') {
+          var sheetNames = Object.keys(selectedSheets);
+          // Optimistic update locally
+          sheetNames.forEach(function(name) {
+            if (sheetDetails[name]) {
+              sheetDetails[name].color = selectedColorHex;
+            }
+          });
+          clearBulkSelection();
+          renderData();
+
+          callApi('changeBulkSheetsColor', { sheetNames: sheetNames, color: selectedColorHex },
+            function(res) {
+              if (!res.success) {
+                showCustomAlert(res.message);
+                refreshData();
+              }
+            }
+          );
+        } else if (targetType === 'sheet') {
+          // Optimistic update locally
+          if (sheetDetails[targetId]) {
+            sheetDetails[targetId].color = selectedColorHex;
+            renderData();
+          }
+
+          callApi('changeSheetColor', { sheetName: targetId, color: selectedColorHex },
+            function(res) {
+              if (!res.success) {
+                showCustomAlert(res.message);
+                refreshData();
+              }
+            }
+          );
+        } else {
+          // Optimistic update locally
+          if (folders[targetId]) {
+            folders[targetId].color = selectedColorHex;
+            renderData();
+          }
+
+          callApi('changeFolderColor', { folderId: targetId, color: selectedColorHex },
+            function(res) {
+              if (!res.success) {
+                showCustomAlert(res.message);
+                refreshData();
+              }
+            }
+          );
+        }
+      }
+
+      /* ================================================
+         LOGIC MODAL DI CHUYỂN SHEET VÀO THƯ MỤC
+         ================================================ */
+      function openMoveToFolderModal(sheetName, parentFolderId) {
+        document.getElementById('moveSheetName').value = sheetName;
+        var select = document.getElementById('folderSelect');
+        select.innerHTML = '<option value="">(Không thuộc thư mục - Root)</option>';
+        
+        rootOrder.forEach(function(item) {
+          if (item.type === 'folder') {
+            var folder = folders[item.id];
+            if (folder) {
+              var isSelected = (item.id === parentFolderId) ? 'selected' : '';
+              select.innerHTML += `<option value="${item.id}" ${isSelected}>${escapeHtml(folder.name)}</option>`;
+            }
+          }
+        });
+
+        openModal('moveToFolderModal');
+      }
+
+      function submitMoveToFolder() {
+        var name = document.getElementById('moveSheetName').value;
+        var folderId = document.getElementById('folderSelect').value || null;
+        
+        closeModal('moveToFolderModal');
+
+        if (name === "__BULK__") {
+          showToast("Đang di chuyển hàng loạt...");
+          var sheetNames = Object.keys(selectedSheets);
+          callApi('moveBulkSheetsToFolder', { sheetNames: sheetNames, folderId: folderId },
+            function(res) {
+              showToast(res.message);
+              if (res.success) {
+                clearBulkSelection();
+                refreshData();
+              }
+            }
+          );
+        } else {
+          showToast("Đang di chuyển sheet...");
+          callApi('moveSheetToFolder', { sheetName: name, folderId: folderId },
+            function(res) {
+              showToast(res.message);
+              if (res.success) refreshData();
+            }
+          );
+        }
+      }
+
+      /* ================================================
+         LOGIC THAO TÁC HÀNG LOẠT (BULK ACTIONS FRONTEND)
+         ================================================ */
+
+
+      function onSheetCheckboxClick(checkbox) {
+        var name = checkbox.getAttribute('data-name');
+        if (checkbox.checked) {
+          selectedSheets[name] = true;
+        } else {
+          delete selectedSheets[name];
+        }
+        updateBulkActionBar();
+        updateFolderCheckboxesState();
+      }
+
+      function updateBulkActionBar() {
+        var count = Object.keys(selectedSheets).length;
+        var bar = document.getElementById('bulkActionBar');
+        if (count > 0) {
+          bar.style.display = 'flex';
+          document.getElementById('bulkSelectCount').innerText = 'Đã chọn ' + count + ' sheets';
+        } else {
+          bar.style.display = 'none';
+        }
+      }
+
+      function clearBulkSelection() {
+        selectedSheets = {};
+        updateBulkActionBar();
+        var checkboxes = document.querySelectorAll('.sheet-select-checkbox, .folder-select-checkbox');
+        checkboxes.forEach(function(cb) { cb.checked = false; });
+      }
+
+      function openBulkChangeColorModal() {
+        openChangeColorModal('', '', 'bulk');
+      }
+
+      function openBulkMoveToFolderModal() {
+        document.getElementById('moveSheetName').value = "__BULK__";
+        var select = document.getElementById('folderSelect');
+        select.innerHTML = '<option value="">(Không thuộc thư mục - Root)</option>';
+        
+        rootOrder.forEach(function(item) {
+          if (item.type === 'folder') {
+            var folder = folders[item.id];
+            if (folder) {
+              select.innerHTML += `<option value="${item.id}">${escapeHtml(folder.name)}</option>`;
+            }
+          }
+        });
+
+        openModal('moveToFolderModal');
+      }
+
+      function submitBulkDuplicate() {
+        var sheetNames = Object.keys(selectedSheets);
+        if (sheetNames.length === 0) return;
+        
+        showToast("Đang nhân bản hàng loạt...");
+        callApi('duplicateBulkSheets', { sheetNames: sheetNames }, function(res) {
+          if (res) {
+            showToast(res.message);
+            if (res.success) {
+              clearBulkSelection();
+              refreshData();
+            }
+          }
+        });
+      }
+
+      function triggerBulkDelete() {
+        var sheetNames = Object.keys(selectedSheets);
+        if (sheetNames.length === 0) return;
+
+        showToast("Đang kiểm tra dữ liệu...");
+        callApi('checkDatabaseSheets', { sheetNames: sheetNames }, function(res) {
+          if (!res || !res.success) {
+            performNormalBulkDelete(sheetNames);
+            return;
+          }
+
+          var dbSheetsInfo = res.dbSheets || [];
+          var dbSheetNames = dbSheetsInfo.map(function(item) { return item.sheetName; });
+          var nonDbSheets = sheetNames.filter(function(name) { return dbSheetNames.indexOf(name) === -1; });
+
+          if (dbSheetsInfo.length === 0) {
+            performNormalBulkDelete(sheetNames);
+            return;
+          }
+
+          if (nonDbSheets.length > 0) {
+            showCustomConfirm(
+              "Xóa sheet không phải DATABASE",
+              "Bạn có chắc chắn muốn xóa " + nonDbSheets.length + " sheet không phải database đã chọn không? (Không thể hoàn tác).",
+              function() {
+                showToast("Đang xóa sheet thường...");
+                callApi('deleteBulkSheets', { sheetNames: nonDbSheets }, function(resDel) {
+                  if (resDel && resDel.success) {
+                    nonDbSheets.forEach(function(n) { delete selectedSheets[n]; });
+                    updateBulkActionBar();
+                    refreshData();
+                    
+                    setTimeout(function() {
+                      askAndDeleteDatabaseSheets(dbSheetsInfo);
+                    }, 500);
+                  } else {
+                    showCustomAlert("Lỗi xóa sheet: " + (resDel ? resDel.message : "Thất bại"));
+                  }
+                });
+              },
+              false
+            );
+          } else {
+            askAndDeleteDatabaseSheets(dbSheetsInfo);
+          }
+        }, function(err) {
+          performNormalBulkDelete(sheetNames);
+        });
+      }
+
+      function performNormalBulkDelete(sheetNames) {
+        showCustomConfirm(
+          "Xóa hàng loạt",
+          "Bạn có chắc chắn muốn xóa " + sheetNames.length + " sheet đã chọn không? (Không thể hoàn tác).",
+          function() {
+            showToast("Đang xóa hàng loạt...");
+            callApi('deleteBulkSheets', { sheetNames: sheetNames }, function(res) {
+              if (res) {
+                showToast(res.message);
+                if (res.success) {
+                  clearBulkSelection();
+                  refreshData();
+                }
+              }
+            });
+          }
+        );
+      }
+
+      // Hàm con hiển thị popup hỏi xác nhận riêng cho Database Sheets
+      function askAndDeleteDatabaseSheets(dbSheetsInfo) {
+        if (dbSheetsInfo.length === 0) return;
+        
+        if (dbSheetsInfo.length === 1) {
+          var item = dbSheetsInfo[0];
+          showCustomConfirm(
+            "Xóa Sheet DATABASE",
+            "CẢNH BÁO: Sheet '" + item.sheetName + "' này là DATABASE của bản mẫu '" + item.templateName + "'. Nếu xóa thì sẽ xóa luôn cái mối quan hệ database - sheet này. Bạn có chắc chắn muốn XÓA VĨNH VIỄN không?",
+            function() {
+              showToast("Đang xóa DATABASE sheet...");
+              callApi('deleteSheet', item.sheetName, function(resDel) {
+                showToast(resDel.message);
+                if (resDel.success) {
+                  delete selectedSheets[item.sheetName];
+                  updateBulkActionBar();
+                  refreshData();
+                }
+              });
+            },
+            false
+          );
+        } else {
+          var sheetNamesList = dbSheetsInfo.map(function(i) { return i.sheetName; });
+          var msg = "CẢNH BÁO: Các sheet sau đây đang đóng vai trò là DATABASE của các bản mẫu tương ứng:<br>";
+          dbSheetsInfo.forEach(function(i) {
+            msg += "- Sheet <b>" + i.sheetName + "</b> (Bản mẫu: " + i.templateName + ")<br>";
+          });
+          msg += "Nếu xóa chúng đi thì sẽ xóa luôn các mối quan hệ database trong các bản mẫu đó. Bạn có chắc chắn muốn XÓA VĨNH VIỄN không?";
+
+          showCustomConfirm(
+            "Xóa các Sheet DATABASE",
+            msg,
+            function() {
+              showToast("Đang xóa các DATABASE sheets...");
+              callApi('deleteBulkSheets', { sheetNames: sheetNamesList }, function(resDel) {
+                if (resDel) {
+                  showToast(resDel.message);
+                  if (resDel.success) {
+                    sheetNamesList.forEach(function(name) { delete selectedSheets[name]; });
+                    updateBulkActionBar();
+                    refreshData();
+                  }
+                }
+              });
+            },
+            false
+          );
+        }
+      }
+
+      function toggleSelectMode() {
+        isSelectMode = !isSelectMode;
+        var checkMark = document.getElementById('selectModeCheckMark');
+        var btn = document.getElementById('toggleSelectModeBtn');
+        if (isSelectMode) {
+          checkMark.style.display = 'block';
+          btn.style.backgroundColor = 'rgba(37, 99, 235, 0.08)';
+          btn.style.borderColor = 'var(--primary)';
+          btn.style.color = 'var(--primary)';
+        } else {
+          checkMark.style.display = 'none';
+          btn.style.backgroundColor = '';
+          btn.style.borderColor = '';
+          btn.style.color = '';
+          clearBulkSelection();
+        }
+        renderData();
+      }
+
+      function toggleBulkKebabMenu(event) {
+        event.stopPropagation();
+        var dropdown = document.getElementById('bulkKebabDropdown');
+        if (!dropdown) return;
+        
+        // Đóng các dropdown khác
+        var allDropdowns = document.querySelectorAll('.kebab-dropdown');
+        allDropdowns.forEach(function(d) {
+          if (d.id !== 'bulkKebabDropdown') {
+            d.style.display = 'none';
+            var card = d.closest('.sheet-card') || d.closest('.folder-card');
+            if (card) card.classList.remove('active-menu');
+          }
+        });
+
+        if (dropdown.style.display === 'block') {
+          dropdown.style.display = 'none';
+        } else {
+          dropdown.style.display = 'block';
+        }
+      }
+
+      function closeBulkKebabMenu() {
+        var dropdown = document.getElementById('bulkKebabDropdown');
+        if (dropdown) dropdown.style.display = 'none';
+      }
+
+      /* ================================================
+         LOGIC BỔ SUNG THÀNH PHẦN (GHI CHÚ & TAGS)
+         ================================================ */
+      function renderNotesIcons(sheetName, comp) {
+        if (!comp || !comp.notesEnabled || !comp.notes) return '';
+        var html = '';
+        comp.notes.forEach(function(note, idx) {
+          if (note.active) {
+            html += `
+              <span class="note-badge-btn" onclick="showNoteDialog(event, '${escapeJsString(sheetName)}', ${idx})" title="${escapeHtml(note.title)}" style="cursor: pointer; font-size: 11px; padding: 2px; user-select: none; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'">
+                ${note.icon}
+              </span>
+            `;
+          }
+        });
+        return html;
+      }
+
+      function renderTagsList(comp) {
+        if (!comp || !comp.tagsEnabled || !comp.tags) return '';
+        var html = '';
+        comp.tags.forEach(function(tag) {
+          if (tag.name) {
+            html += `
+              <span style="font-size: 8px; font-weight: 600; padding: 2px 5px; background-color: ${tag.color || 'var(--primary)'}; color: #ffffff; border-radius: 4px; display: inline-block; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1;" title="${escapeHtml(tag.name)}">
+                ${escapeHtml(tag.name)}
+              </span>
+            `;
+          }
+        });
+        return html;
+      }
+
+      function openComponentsModal(sheetName) {
+        // Đóng kebab dropdown trước
+        var allDropdowns = document.querySelectorAll('.kebab-dropdown');
+        allDropdowns.forEach(function(d) { d.style.display = 'none'; });
+
+        document.getElementById('componentsSheetName').value = sheetName;
+        var current = sheetComponents[sheetName] || { notesEnabled: false, tagsEnabled: false, notes: [], tags: [] };
+
+        document.getElementById('enableNotesCheckbox').checked = !!current.notesEnabled;
+        document.getElementById('enableTagsCheckbox').checked = !!current.tagsEnabled;
+
+        // Render Ghi chú hiện tại động
+        document.getElementById('notesList').innerHTML = '';
+        if (current.notes) {
+          current.notes.forEach(function(note) {
+            addNoteRowElement(note.title, note.icon, note.text);
+          });
+        }
+        updateAddNoteButtonState();
+
+        // Render Tags hiện tại động
+        document.getElementById('tagsList').innerHTML = '';
+        if (current.tags) {
+          current.tags.forEach(function(tag) {
+            addTagRowElement(tag.name, tag.color);
+          });
+        }
+        updateAddTagButtonState();
+        toggleComponentsArea();
+
+        openModal('componentsModal');
+      }
+
+      function toggleComponentsArea() {
+        var notesChecked = document.getElementById('enableNotesCheckbox').checked;
+        var tagsChecked = document.getElementById('enableTagsCheckbox').checked;
+        document.getElementById('notesConfigContainer').style.display = notesChecked ? 'block' : 'none';
+        document.getElementById('tagsConfigContainer').style.display = tagsChecked ? 'block' : 'none';
+      }
+
+      function addNewNoteRow() {
+        var rows = document.querySelectorAll('.note-edit-item');
+        if (rows.length >= 3) return;
+        addNoteRowElement('', '📄', '');
+        updateAddNoteButtonState();
+      }
+
+      function addNoteRowElement(title, icon, text) {
+        var item = document.createElement('div');
+        item.className = 'note-edit-item';
+        item.style = 'border: 1px solid var(--border-color); padding: 6px; border-radius: var(--radius-md); background: #f8fafc; position: relative; margin-bottom: 6px; box-sizing: border-box;';
+        item.innerHTML = `
+          <button class="btn" onclick="removeNoteRow(this)" style="position: absolute; right: 4px; top: 4px; padding: 2px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center;" title="Xóa ghi chú">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+          
+          <div style="display: flex; gap: 4px; margin-bottom: 4px; padding-right: 20px;">
+            <input type="text" class="note-title-input" value="${escapeHtml(title)}" placeholder="Tiêu đề (ví dụ: Chú ý)" style="flex-grow: 1; font-size: 11px; padding: 3px 6px; margin: 0; height: 22px; width: 100%; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+            <select class="note-icon-select" style="width: auto; font-size: 11px; padding: 2px; margin: 0; height: 22px; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+              <option value="📄" ${icon === '📄' ? 'selected' : ''}>📄</option>
+              <option value="✏️" ${icon === '✏️' ? 'selected' : ''}>✏️</option>
+              <option value="⚠️" ${icon === '⚠️' ? 'selected' : ''}>⚠️</option>
+              <option value="📌" ${icon === '📌' ? 'selected' : ''}>📌</option>
+              <option value="❓" ${icon === '❓' ? 'selected' : ''}>❓</option>
+            </select>
+          </div>
+          <textarea class="note-text-textarea" placeholder="Nội dung tối đa 200 chữ" maxlength="200" style="width: 100%; height: 45px; font-size: 11px; padding: 4px; margin: 0; box-sizing: border-box; resize: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm);">${escapeHtml(text)}</textarea>
+        `;
+        document.getElementById('notesList').appendChild(item);
+      }
+
+      function removeNoteRow(btn) {
+        var row = btn.closest('.note-edit-item');
+        var titleInput = row.querySelector('.note-title-input');
+        var title = titleInput ? titleInput.value.trim() : "";
+        var displayName = title ? "'" + title + "'" : "này";
+        
+        showCustomConfirm(
+          "Loại bỏ Ghi chú",
+          "Bạn có chắc chắn muốn loại bỏ ghi chú " + displayName + " không?",
+          function() {
+            row.remove();
+            updateAddNoteButtonState();
+          }
+        );
+      }
+
+      function updateAddNoteButtonState() {
+        var rows = document.querySelectorAll('.note-edit-item');
+        document.getElementById('btnAddNote').disabled = (rows.length >= 3);
+      }
+
+      function addNewTagRow() {
+        var rows = document.querySelectorAll('.tag-edit-row');
+        if (rows.length >= 3) return;
+        addTagRowElement('', '#2563EB');
+        updateAddTagButtonState();
+      }
+
+      function addTagRowElement(name, color) {
+        var item = document.createElement('div');
+        item.className = 'tag-edit-row';
+        item.style = 'display: flex; gap: 4px; align-items: center;';
+        item.innerHTML = `
+          <input type="text" class="tag-name-input" value="${escapeHtml(name)}" placeholder="Tag name (max 10 ký tự)" maxlength="10" style="flex-grow: 1; font-size: 11px; padding: 3px 6px; margin: 0; height: 22px;">
+          <input type="color" class="tag-color-input" value="${color || '#2563EB'}" style="width: 26px; height: 22px; padding: 0; border: none; cursor: pointer; background: transparent; flex-shrink: 0; margin: 0;">
+          <button class="btn" onclick="removeTagRow(this)" style="padding: 2px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; flex-shrink: 0; margin: 0; height: 22px;" title="Xóa tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--danger);">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        `;
+        document.getElementById('tagsList').appendChild(item);
+      }
+
+      function removeTagRow(btn) {
+        var row = btn.closest('.tag-edit-row');
+        var nameInput = row.querySelector('.tag-name-input');
+        var name = nameInput ? nameInput.value.trim() : "";
+        var displayName = name ? "'" + name + "'" : "này";
+        
+        showCustomConfirm(
+          "Loại bỏ Tag",
+          "Bạn có chắc chắn muốn loại bỏ tag " + displayName + " không?",
+          function() {
+            row.remove();
+            updateAddTagButtonState();
+          }
+        );
+      }
+
+      function updateAddTagButtonState() {
+        var rows = document.querySelectorAll('.tag-edit-row');
+        document.getElementById('btnAddTag').disabled = (rows.length >= 3);
+      }
+
+      function submitSaveComponents() {
+        var sheetName = document.getElementById('componentsSheetName').value;
+        var notesEnabled = document.getElementById('enableNotesCheckbox').checked;
+        var tagsEnabled = document.getElementById('enableTagsCheckbox').checked;
+
+        var notes = [];
+        if (notesEnabled) {
+          var noteItems = document.querySelectorAll('.note-edit-item');
+          noteItems.forEach(function(item) {
+            var title = item.querySelector('.note-title-input').value.trim();
+            var icon = item.querySelector('.note-icon-select').value;
+            var text = item.querySelector('.note-text-textarea').value.trim();
+            if (title && text) {
+              notes.push({
+                active: true,
+                title: title,
+                icon: icon,
+                text: text.substring(0, 200)
+              });
+            }
+          });
+        }
+
+        var tags = [];
+        if (tagsEnabled) {
+          var tagRows = document.querySelectorAll('.tag-edit-row');
+          tagRows.forEach(function(row) {
+            var name = row.querySelector('.tag-name-input').value.trim();
+            var color = row.querySelector('.tag-color-input').value;
+            if (name) {
+              tags.push({
+                name: name.substring(0, 10),
+                color: color
+              });
+            }
+          });
+        }
+
+        closeModal('componentsModal');
+        
+        // Optimistic update locally
+        sheetComponents[sheetName] = {
+          notesEnabled: notesEnabled,
+          tagsEnabled: tagsEnabled,
+          notes: notes,
+          tags: tags
+        };
+        renderData();
+
+        callApi('saveSheetComponents', {
+          sheetName: sheetName,
+          components: {
+            notesEnabled: notesEnabled,
+            tagsEnabled: tagsEnabled,
+            notes: notes,
+            tags: tags
+          }
+        }, function(res) {
+          if (!res.success) {
+            showCustomAlert(res.message);
+            refreshData();
+          }
+        });
+      }
+
+      function showNoteDialog(event, sheetName, idx) {
+        event.stopPropagation();
+        var comp = sheetComponents[sheetName];
+        if (comp && comp.notes && comp.notes[idx]) {
+          var note = comp.notes[idx];
+          document.getElementById('noteDisplayTitle').innerText = note.icon + " " + note.title;
+          document.getElementById('noteDisplayText').innerText = note.text;
+          openModal('noteDisplayModal');
+        }
+      }
+
+      /* ================================================
+         LOGIC TẠO MỚI SHEET TÙY CHỈNH (INTEGRATED)
+         ================================================ */
+      function openCreateCustomSheetModal() {
+        document.getElementById('newCustomSheetName').value = "";
+        document.getElementById('newCustomSheetType').value = "empty";
+        onCustomSheetTypeChange();
+
+        // 1. Đổ dữ liệu vào dropdown Templates
+        var templateSelect = document.getElementById('customSheetTemplateSelect');
+        templateSelect.innerHTML = "";
+        if (templates.length === 0) {
+          templateSelect.innerHTML = `<option value="">(Không có bản mẫu nào)</option>`;
+        } else {
+          templates.forEach(function(t) {
+            templateSelect.innerHTML += `<option value="${t.id}">${escapeHtml(t.name)}</option>`;
+          });
+        }
+
+        // 2. Đổ dữ liệu vào dropdown Sheet nguồn sao chép (Lấy từ sheetDetails)
+        var copySelect = document.getElementById('customSheetCopySelect');
+        copySelect.innerHTML = "";
+        var sheetNames = Object.keys(sheetDetails);
+        if (sheetNames.length === 0) {
+          copySelect.innerHTML = `<option value="">(Không có sheet nguồn)</option>`;
+        } else {
+          sheetNames.forEach(function(name) {
+            copySelect.innerHTML += `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
+          });
+        }
+
+        openModal('createCustomSheetModal');
+      }
+
+      function onCustomSheetTypeChange() {
+        var type = document.getElementById('newCustomSheetType').value;
+        var templateArea = document.getElementById('customSheetTemplateArea');
+        var copyArea = document.getElementById('customSheetCopyArea');
+
+        if (type === 'template') {
+          templateArea.style.display = "block";
+          copyArea.style.display = "none";
+        } else if (type === 'copy') {
+          templateArea.style.display = "none";
+          copyArea.style.display = "block";
+        } else {
+          templateArea.style.display = "none";
+          copyArea.style.display = "none";
+        }
+      }
+
+      function submitCreateCustomSheet() {
+        var name = document.getElementById('newCustomSheetName').value.trim();
+        var type = document.getElementById('newCustomSheetType').value;
+        var templateId = (type === 'template') ? document.getElementById('customSheetTemplateSelect').value : null;
+        var sourceSheetName = (type === 'copy') ? document.getElementById('customSheetCopySelect').value : null;
+
+        if (!name) {
+          showCustomAlert("Tên Sheet không được để trống!");
+          return;
+        }
+
+        closeModal('createCustomSheetModal');
+        showToast("Đang tạo Sheet mới...");
+
+        callApi('createCustomSheet', {
+          name: name,
+          type: type,
+          templateId: templateId,
+          sourceSheetName: sourceSheetName
+        }, function(res) {
+          if (res) {
+            showToast(res.message);
+            if (res.success) {
+              refreshData();
+            } else {
+              showCustomAlert(res.message);
+            }
+          } else {
+            showToast("Lỗi: Phản hồi rỗng.");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

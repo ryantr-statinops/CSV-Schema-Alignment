@@ -1,0 +1,3310 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <!-- Nhúng Google Font 'Inter' -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --danger-bg: #fee2e2;
+      --radius-lg: 12px;
+      --radius-md: 8px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      padding: 0;
+      margin: 0;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-size: 13px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 100vh;
+      box-sizing: border-box;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    /* STYLE HEADER MỚI ĐỒNG BỘ */
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border-color);
+      margin: -16px -16px 12px -16px;
+    }
+    .sidebar-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    body.in-iframe .sidebar-header {
+      display: none !important;
+    }
+    body.in-iframe .container {
+      padding-top: 8px !important;
+    }
+
+    /* SECTIONS Layout */
+    .section-box {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .section-header h2 {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--primary);
+      margin: 0;
+    }
+
+    .list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-right: 2px;
+    }
+
+    /* SCROLLBAR STYLE */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* TOGGLE SWITCH */
+    .toggle-switch.active {
+      background: var(--primary) !important;
+    }
+    .toggle-switch.active div {
+      transform: translateX(16px) !important;
+    }
+
+    /* CARDS */
+    .manager-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #fafbfc;
+      transition: var(--transition);
+      box-sizing: border-box;
+    }
+
+    .manager-card:hover {
+      border-color: #cbd5e1;
+      background-color: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex-grow: 1;
+    }
+
+    .card-name {
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 12.5px;
+    }
+
+    .card-subtext {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    /* QUICK ACTION BUTTON */
+    .btn-quick {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .btn-quick:hover {
+      background-color: rgba(15, 23, 42, 0.06);
+      color: var(--primary);
+    }
+
+    .btn-quick:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    /* SELECTOR ITEM STYLE FROM 04.1_SIDEBAR */
+    .selector-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .selector-item:hover {
+      background-color: #f1f5f9;
+    }
+
+    .selector-item input[type="checkbox"] {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary);
+      margin: 0;
+    }
+
+    .selector-item label {
+      cursor: pointer;
+      font-weight: 500;
+      user-select: none;
+      flex-grow: 1;
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 6px 10px;
+      border-radius: var(--radius-md);
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    /* MODALS */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(15, 23, 42, 0.4);
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      width: 250px;
+      max-height: 90vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border-color);
+      box-sizing: border-box;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    .modal-content label,
+    #templateEditView label {
+      display: block;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .modal-content input[type="text"],
+    .modal-content select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 10px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 10px;
+      margin-top: 6px;
+    }
+
+    /* COLOR PICKER GRID */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .color-option {
+      width: 100%;
+      padding-top: 100%;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-color);
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.active::after {
+      content: "";
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      width: 50%;
+      height: 50%;
+      background-color: var(--text-main);
+      border-radius: 50%;
+    }
+
+    /* TEMPLATE BUILDER */
+    #templateEditView {
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+
+    #templateEditView .section-box {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      height: 100%;
+    }
+
+    .builder-header-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .order-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-right: 6px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .order-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .order-btn:hover {
+      background-color: #f1f5f9;
+      color: var(--primary);
+    }
+
+    .order-btn:active {
+      transform: scale(0.9);
+    }
+
+    .order-btn:disabled {
+      color: #e2e8f0;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* Toolbar Toggle Button Style */
+    .modal-content label.toolbar-toggle-btn,
+    .toolbar-toggle-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      text-align: center !important;
+      line-height: 1 !important;
+      margin-bottom: 0 !important;
+      width: 32px !important;
+      height: 28px !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 4px !important;
+      background-color: var(--card-bg) !important;
+      color: var(--text-main) !important;
+      font-family: inherit !important;
+      font-size: 11px !important;
+      font-weight: 500 !important;
+      cursor: pointer !important;
+      transition: var(--transition) !important;
+      user-select: none !important;
+      padding: 0 !important;
+      box-sizing: border-box !important;
+    }
+
+    .modal-content label.toolbar-toggle-btn:hover,
+    .toolbar-toggle-btn:hover {
+      background-color: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    .modal-content label.toolbar-toggle-btn.active,
+    .toolbar-toggle-btn.active {
+      background-color: var(--primary) !important;
+      border-color: var(--primary) !important;
+      color: white !important;
+      font-weight: 600 !important;
+    }
+
+    .toolbar-toggle-btn b,
+    .toolbar-toggle-btn i,
+    .toolbar-toggle-btn span {
+      display: inline-block !important;
+      line-height: 1 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Kebab Menu cho Header Card */
+    .kebab-menu-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .kebab-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 22px;
+      z-index: 100;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      min-width: 125px;
+      box-sizing: border-box;
+      overflow: hidden;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .kebab-dropdown button {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-family: inherit;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: var(--transition);
+      display: block;
+      box-sizing: border-box;
+    }
+
+    .kebab-dropdown button:hover {
+      background-color: #f1f5f9;
+      color: var(--primary);
+    }
+
+    .builder-card {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .builder-card:hover {
+      border-color: #cbd5e1;
+      background-color: #f8fafc;
+    }
+
+    #status {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background-color: var(--primary);
+      color: white;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-size: 11.5px;
+      font-weight: 500;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: none;
+      z-index: 2000;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* STYLE CHO TÍNH NĂNG DATABASE */
+    .add-sheet-dashed-card {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background-color: #f1f5f9;
+      transition: var(--transition);
+      margin-top: 8px;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    .add-sheet-dashed-card svg {
+      color: #64748b !important;
+    }
+    .add-sheet-dashed-card:hover {
+      border-color: #94a3b8;
+      background-color: #e2e8f0;
+    }
+    .add-sheet-dashed-card:hover svg {
+      color: #334155 !important;
+    }
+
+    .folder-block {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    .folder-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      box-sizing: border-box;
+      cursor: default;
+      width: 100%;
+    }
+    .folder-sheets-container {
+      position: relative;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+    .sheet-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 10px 14px;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-sizing: border-box;
+      cursor: default;
+      width: 100%;
+      transition: var(--transition);
+      position: relative;
+    }
+    /* Đường nối ngang */
+    .sheet-card::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      width: 12px;
+      height: 1px;
+      background-color: #cbd5e1;
+    }
+    /* Phân đoạn đường nối dọc */
+    .sheet-card::after {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: -10px;
+      bottom: -10px;
+      width: 1px;
+      background-color: #cbd5e1;
+    }
+    /* Thẻ con cuối cùng dừng đường nối dọc ở giữa card */
+    .sheet-card:last-child::after {
+      bottom: 50%;
+    }
+    .sheet-card:hover {
+      border-color: #cbd5e1;
+      background-color: #f8fafc;
+    }
+    .btn-collapse {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .caret-icon {
+      transition: transform 0.2s;
+    }
+    .caret-icon.collapsed {
+      transform: rotate(-90deg);
+    }
+    /* CSS cho nút reorder giống bên Sheet Manager */
+    .order-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      margin-right: 4px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .order-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 1px;
+      border-radius: 4px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .order-btn:hover {
+      background-color: rgba(15, 23, 42, 0.08);
+      color: var(--primary);
+    }
+    .order-btn:disabled {
+      color: #e2e8f0;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    /* Kebab Menu Container cho DATABASE card */
+    .kebab-menu-container {
+      position: relative;
+      display: inline-block;
+    }
+    .kebab-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 24px;
+      z-index: 100;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      min-width: 130px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .kebab-dropdown button {
+      width: 100%;
+      text-align: left;
+      background: none;
+      border: none;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-family: inherit;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: var(--transition);
+      display: block;
+      box-sizing: border-box;
+    }
+    .kebab-dropdown button:hover {
+      background-color: #f1f5f9;
+      color: var(--primary);
+    }
+    .kebab-dropdown button.text-danger {
+      color: var(--danger);
+    }
+    .kebab-dropdown button.text-danger:hover {
+      background-color: var(--danger-bg);
+      color: var(--danger-hover);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ================================================
+         VIEW 1: DANH SÁCH CHÍNH (MAIN VIEW)
+         ================================================ -->
+  <div class="container" id="mainView">
+
+    <!-- TOP HEADER WITH GEAR & CLOSE BUTTON -->
+    <div class="sidebar-header">
+      <span class="sidebar-title">Template Manager</span>
+    </div>
+
+    <!-- Tác vụ định dạng mặc định -->
+    <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: -10px; flex-shrink: 0;">
+      <button class="btn btn-secondary" onclick="openDefaultFormatModal()" title="Cài đặt định dạng mặc định" style="padding: 4px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px; box-sizing: border-box; border-radius: var(--radius-md);">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        Định dạng mặc định
+      </button>
+    </div>
+
+    <!-- SECTION 1: TEMPLATE MANAGER -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2>Danh sách Templates</h2>
+        <button class="btn btn-primary" style="font-size: 10px; padding: 3px 6px;" onclick="openCreateTemplateView()">+
+          Thêm</button>
+      </div>
+      <div class="list-container" id="templateList">
+        <div style="color: var(--text-muted); text-align: center; padding: 10px 0;">Đang tải...</div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: HEADER MANAGER -->
+    <div class="section-box">
+      <div class="section-header">
+        <h2>Danh sách Headers</h2>
+        <button class="btn btn-primary" style="font-size: 10px; padding: 3px 6px;" onclick="openCreateHeaderModal()">+
+          Thêm</button>
+      </div>
+      <div class="list-container" id="headerList">
+        <div style="color: var(--text-muted); text-align: center; padding: 10px 0;">Đang tải...</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================================================
+         VIEW 2: INLINE TEMPLATE BUILDER (EDIT VIEW)
+         ================================================ -->
+  <div class="container" id="templateEditView" style="display: none;">
+    <div class="section-box">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <h2 id="templateEditTitle" style="margin-bottom: 0;">Thiết lập Bản mẫu</h2>
+        <button id="templateLinkBtn" class="btn btn-secondary" style="padding: 4px 6px; display: none; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-md);" onclick="openTemplateLinkView()" title="Sheets liên kết">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+        </button>
+      </div>
+
+      <input type="hidden" id="editTemplateId">
+
+      <label for="templateName">Tên bản mẫu (Template Name)</label>
+      <input type="text" id="templateName" placeholder="Ví dụ: Báo cáo Nhân sự"
+        style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; margin-bottom: 12px;">
+
+      <!-- Cấu hình Định dạng (Formatting Options) -->
+      <div
+        style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px; background-color: #fafbfc; box-sizing: border-box; margin-bottom: 12px;">
+        <!-- Chiều cao dòng -->
+        <span
+          style="font-weight: 600; font-size: 11px; color: var(--primary); display: block; margin-bottom: 8px; text-transform: uppercase;">Chiều
+          cao dòng</span>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+          <div>
+            <label for="templateHeaderCellHeight"
+              style="font-size:10px; margin-bottom:2px; display:block; color: var(--text-muted);">Header (tiêu
+              đề)</label>
+            <input type="number" id="templateHeaderCellHeight" placeholder="24" value="24" min="15" max="100"
+              style="width: 100%; box-sizing: border-box; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 11px; margin-bottom: 0; height: 24px;">
+          </div>
+          <div>
+            <label for="templateContentCellHeight"
+              style="font-size:10px; margin-bottom:2px; display:block; color: var(--text-muted);">Content (nội
+              dung)</label>
+            <input type="number" id="templateContentCellHeight" placeholder="20" value="20" min="15" max="100"
+              style="width: 100%; box-sizing: border-box; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 11px; margin-bottom: 0; height: 24px;">
+          </div>
+        </div>
+
+        <!-- Tùy chọn khác -->
+        <div
+          style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px; border-top: 1px solid var(--border-color); padding-top: 8px;">
+          <label
+            style="display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; font-size: 11px; color: var(--text-main); margin-bottom: 0;">
+            <input type="checkbox" id="templateDeleteExtraColumns" style="width: auto; height: auto; margin: 0;">
+            Xóa các cột ngoài header
+          </label>
+          <label
+            style="display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; font-size: 11px; color: var(--text-main); margin-bottom: 0;">
+            <input type="checkbox" id="templateApplyTableBorder" style="width: auto; height: auto; margin: 0;" checked>
+            Áp dụng border cho table
+          </label>
+        </div>
+      </div>
+
+      <!-- Phần tiêu đề và nút kích hoạt chọn Headers giống thiết kế của 04.1 Sidebar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label style="margin-bottom: 0; font-weight: 600; color: var(--text-muted); font-size: 11px;">Danh sách
+          Header</label>
+        <button type="button" class="btn btn-primary" style="font-size: 10px; padding: 3px 6px;"
+          onclick="openHeaderSelector()">
+          + Thêm
+        </button>
+      </div>
+
+      <!-- Scrollable list chứa các header card đang được ghép trong template -->
+      <div class="builder-header-list" id="builderList"></div>
+
+      <div class="modal-buttons"
+        style="display: flex; justify-content: flex-end; gap: 6px; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 10px; flex-shrink: 0;">
+        <button class="btn btn-secondary" onclick="closeTemplateEditView()">Hủy</button>
+        <button class="btn btn-primary" onclick="submitTemplateForm()">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+         VIEW 3: LINKED SHEETS TAB VIEW
+         ================================================ -->
+  <div class="container" id="templateSheetsLinkView" style="display: none; flex-direction: column;">
+    <div class="section-box" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <button class="btn btn-secondary" onclick="backToTemplateEditView()" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 11px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Quay lại
+        </button>
+        <button class="btn btn-primary" onclick="syncLinkedSheets()" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 11px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Đồng bộ
+        </button>
+      </div>
+
+      <div style="font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;" id="linkedSheetsTitle">
+        Sheets liên kết:
+      </div>
+      
+      <div class="list-container" id="linkedSheetsList" style="max-height: none; flex: 1; overflow-y: auto;">
+        <!-- Danh sách sheet dưới dạng card -->
+      </div>
+      
+      <!-- Nút Thiết lập kho dữ liệu tổng nét đứt -->
+      <div id="addDbDashedCard" class="add-sheet-dashed-card" onclick="openDatabaseModal()" title="Thiết lập kho dữ liệu tổng" style="flex-shrink: 0; margin-top: 8px; margin-bottom: 8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--text-muted); margin-right: 6px;">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span style="font-weight: 600; font-size: 12px; color: #475569;">Thiết lập kho dữ liệu tổng</span>
+      </div>
+
+      <div id="dbActionBar" style="display: none; flex-shrink: 0; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 10px; gap: 6px; justify-content: flex-end;">
+        <button class="btn btn-secondary" onclick="cancelDatabaseConfig()" style="font-size: 11px; padding: 5px 12px;">Hủy</button>
+        <button class="btn btn-primary" onclick="applyDatabaseConfig()" style="font-size: 11px; padding: 5px 12px;">Áp dụng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST STATUS -->
+  <div id="status"></div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 24px 32px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.15);">
+      <div style="width: 32px; height: 32px; border: 3px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px;"></div>
+      <div id="loadingOverlayText" style="font-size: 13px; font-weight: 500; color: #0f172a;">Đang xử lý...</div>
+    </div>
+  </div>
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+
+  <!-- ================================================
+         MODAL CHỌN HEADERS LIÊN KẾT (TƯƠNG TỰ CHỌN DROPDOWNS TRONG 04.1)
+         ================================================ -->
+  <div id="headerSelectorModal" class="modal">
+    <div class="modal-content" style="width: 250px;">
+      <h3>Chọn các Header áp dụng</h3>
+
+      <!-- Danh sách Checkbox giống selectorList của 04.1 -->
+      <div id="headerSelectorList"
+        style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 4px; max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; background-color: #fafbfc; margin-bottom: 12px; box-sizing: border-box;">
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeModal('headerSelectorModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="applyHeaderSelection()">Chọn</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+         MODAL CREATE/EDIT HEADER (SECTION 2)
+         ================================================ -->
+  <div id="headerModal" class="modal">
+    <div class="modal-content">
+      <h3 id="headerModalTitle">Thiết lập Header</h3>
+      <input type="hidden" id="editHeaderId">
+
+      <label for="headerName">Tên cột Header</label>
+      <input type="text" id="headerName" placeholder="Ví dụ: Họ và Tên">
+
+      <label for="headerDataType">Kiểu dữ liệu</label>
+      <select id="headerDataType" onchange="onHeaderTypeChange()">
+        <option value="text">Văn bản (Text)</option>
+        <option value="number">Số (Number)</option>
+        <option value="date">Ngày tháng (Date)</option>
+        <option value="checkbox">Hộp kiểm (Checkbox)</option>
+        <option value="dropdown">Danh sách chọn (Dropdown)</option>
+        <option value="formula">Công thức tính (Formula)</option>
+      </select>
+
+      <!-- Dropdown Link Area -->
+      <div id="dropdownLinkArea" style="display: none;">
+        <label for="dropdownLinkSelect">Dropdown List liên kết</label>
+        <select id="dropdownLinkSelect" onchange="onDropdownLinkChange()"></select>
+      </div>
+
+      <!-- Default Value Type Area -->
+      <div id="defaultTypeArea">
+        <label for="headerDefaultType">Kiểu giá trị mặc định</label>
+        <select id="headerDefaultType" onchange="onDefaultTypeChange()"></select>
+      </div>
+
+      <!-- Default Value Input Area -->
+      <div id="defaultValueArea" style="display: none;">
+        <label for="headerDefaultValue">Giá trị mặc định</label>
+        <div id="defaultValueWidgetContainer"></div>
+      </div>
+
+      <!-- Required Toggle -->
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <label style="font-weight: 500; color: var(--text-muted); font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 8px; user-select: none;" for="headerRequiredToggle">
+          <span style="color: var(--danger); font-weight: 600;">*</span>
+          Bắt buộc khi nhập liệu
+        </label>
+        <div class="toggle-switch" id="headerRequiredToggle" onclick="toggleRequired(this)" style="
+          width: 36px; height: 20px; background: #e2e8f0; border-radius: 999px; 
+          position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0;
+          margin-left: auto;" data-required="false">
+          <div style="
+            width: 16px; height: 16px; background: white; border-radius: 50%;
+            position: absolute; top: 2px; left: 2px;
+            transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+          "></div>
+        </div>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeModal('headerModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="submitHeaderForm()">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ================================================
+         MODAL CẤU HÌNH ĐỊNH DẠNG CỘT (COLUMN FORMATTING)
+         ================================================ -->
+  <div id="headerFormatModal" class="modal" style="z-index: 1100;">
+    <div class="modal-content" style="width: 280px; padding: 12px; max-height: 95vh; overflow-y: auto;">
+      <h3
+        style="margin-top: 0; font-size: 13px; font-weight: 600; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">
+        Định dạng cột tiêu đề</h3>
+      <div id="fmtHeaderNameSubtitle" onclick="toggleFmtColorGrid()"
+        style="cursor: pointer; font-size: 11.5px; font-weight: 600; color: var(--text-main); margin-bottom: 8px; padding: 6px 8px; background-color: #f1f5f9; border-radius: var(--radius-md); border-left: 3px solid var(--primary); word-break: break-all; transition: var(--transition);"
+        title="Nhấn để đổi màu thẻ card">Cột: (Đang tải...)</div>
+
+      <!-- Bảng chọn màu thẻ card -->
+      <div id="fmtHeaderCardColorGrid"
+        style="display: none; border: 1px solid var(--border-color); padding: 8px; border-radius: var(--radius-md); background-color: #fafbfc; margin-bottom: 8px;">
+        <div
+          style="font-size: 10px; font-weight: 600; color: var(--primary); margin-bottom: 6px; text-transform: uppercase;">
+          Màu thẻ card</div>
+        <div class="color-grid"
+          style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 6px;">
+          <div class="color-option color-option-fmt" style="background-color: #EAF4FF;" data-color="#EAF4FF"
+            onclick="selectFmtCardColor('#EAF4FF')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #EAFBF3;" data-color="#EAFBF3"
+            onclick="selectFmtCardColor('#EAFBF3')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #F3EEFF;" data-color="#F3EEFF"
+            onclick="selectFmtCardColor('#F3EEFF')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #FFF2E8;" data-color="#FFF2E8"
+            onclick="selectFmtCardColor('#FFF2E8')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #FFECEF;" data-color="#FFECEF"
+            onclick="selectFmtCardColor('#FFECEF')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #FFF9DB;" data-color="#FFF9DB"
+            onclick="selectFmtCardColor('#FFF9DB')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #E8FAFB;" data-color="#E8FAFB"
+            onclick="selectFmtCardColor('#E8FAFB')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #EEF6EC;" data-color="#EEF6EC"
+            onclick="selectFmtCardColor('#EEF6EC')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #F8F4EC;" data-color="#F8F4EC"
+            onclick="selectFmtCardColor('#F8F4EC')"></div>
+          <div class="color-option color-option-fmt" style="background-color: #F5F5F5;" data-color="#F5F5F5"
+            onclick="selectFmtCardColor('#F5F5F5')"></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" style="padding: 2px 6px; font-size: 10px;"
+            onclick="selectFmtCardColor(null)">Reset màu thẻ</button>
+        </div>
+      </div>
+
+      <input type="hidden" id="formatCardHeaderIdx">
+
+      <!-- SECTION 1: COLUMN WIDTH -->
+      <div
+        style="border: 1px solid var(--border-color); padding: 8px; border-radius: var(--radius-md); background-color: #fafbfc; margin-bottom: 8px;">
+        <span
+          style="font-weight: 600; font-size: 10px; color: var(--primary); display: block; margin-bottom: 4px; text-transform: uppercase;">Độ
+          rộng cột (Column Size)</span>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 4px;">
+          <label
+            style="display: flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; font-size: 11px; color: var(--text-muted); margin-bottom: 0; line-height: 1;">
+            <input type="radio" name="fmtWidthType" value="auto" id="fmtWidthTypeAuto"
+              onchange="toggleFmtCustomWidthInput()" checked style="width:auto; margin:0;">
+            Tự động
+          </label>
+          <label
+            style="display: flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; font-size: 11px; color: var(--text-muted); margin-bottom: 0; line-height: 1;">
+            <input type="radio" name="fmtWidthType" value="custom" id="fmtWidthTypeCustom"
+              onchange="toggleFmtCustomWidthInput()" style="width:auto; margin:0;">
+            Tùy chỉnh
+          </label>
+        </div>
+        <div id="fmtCustomWidthArea" style="display: none;">
+          <input type="number" id="fmtWidthValue" placeholder="100 px" min="20" max="1000"
+            style="width: 100%; box-sizing: border-box; padding: 4px 6px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 11px; margin-bottom: 0; height: 22px;">
+        </div>
+      </div>
+
+      <!-- SECTION 2: HEADER FORMAT -->
+      <div
+        style="border: 1px solid var(--border-color); padding: 8px; border-radius: var(--radius-md); background-color: #fafbfc; margin-bottom: 8px;">
+        <span
+          style="font-weight: 600; font-size: 10px; color: var(--primary); display: block; margin-bottom: 6px; text-transform: uppercase;">Tiêu
+          đề (Header Format)</span>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px; margin-bottom: 6px;">
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Font
+              chữ</label>
+            <select id="fmtHeaderFont"
+              style="width:100%; padding: 3px; font-size:11px; border: 1px solid var(--border-color); border-radius: var(--radius-md); height: 22px; margin-bottom: 0; box-sizing: border-box;">
+              <option value="">(Mặc định)</option>
+              <option value="Arial">Arial</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Calibri">Calibri</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Lexend">Lexend</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Georgia">Georgia</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Cỡ chữ</label>
+            <input type="number" id="fmtHeaderFontSize" placeholder="10" min="6" max="72"
+              style="width: 100%; box-sizing: border-box; padding: 3px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 11px; height: 22px; margin-bottom: 0;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: center;">
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Căn lề</label>
+            <select id="fmtHeaderAlign"
+              style="width:100%; padding: 3px; font-size:11px; border: 1px solid var(--border-color); border-radius: var(--radius-md); height: 22px; margin-bottom: 0; box-sizing: border-box;">
+              <option value="">(Mặc định)</option>
+              <option value="left">Trái</option>
+              <option value="center">Giữa</option>
+              <option value="right">Phải</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Màu
+              chữ</label>
+            <div style="display: flex; gap: 3px; align-items: center;">
+              <input type="color" id="fmtHeaderTextColorPicker" oninput="syncColorInput('header')"
+                style="width: 22px; height: 22px; border: 1px solid var(--border-color); padding: 0; cursor: pointer; border-radius: 4px; box-sizing: border-box; flex-shrink: 0; background: none;">
+              <input type="text" id="fmtHeaderTextColorText" placeholder="#000000" oninput="syncColorText('header')"
+                style="flex-grow: 1; min-width: 0; font-size: 10px; height: 22px; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0; box-sizing: border-box;">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 8px;">
+          <input type="checkbox" id="fmtHeaderBold" style="display: none;"
+            onchange="toggleToolbarBtnStyle('fmtHeaderBold', 'lblHeaderBold')">
+          <label class="toolbar-toggle-btn" id="lblHeaderBold" for="fmtHeaderBold" title="Bold (In đậm)">
+            <b style="font-weight: bold; font-size: 12px; line-height: 1; display: inline-block;">B</b>
+          </label>
+          <input type="checkbox" id="fmtHeaderItalic" style="display: none;"
+            onchange="toggleToolbarBtnStyle('fmtHeaderItalic', 'lblHeaderItalic')">
+          <label class="toolbar-toggle-btn" id="lblHeaderItalic" for="fmtHeaderItalic" title="Italic (In nghiêng)">
+            <i
+              style="font-style: italic; font-size: 12px; line-height: 1; display: inline-block; font-family: inherit;">I</i>
+          </label>
+          <input type="checkbox" id="fmtHeaderStrike" style="display: none;"
+            onchange="toggleToolbarBtnStyle('fmtHeaderStrike', 'lblHeaderStrike')">
+          <label class="toolbar-toggle-btn" id="lblHeaderStrike" for="fmtHeaderStrike"
+            title="Strikethrough (Gạch ngang)">
+            <span
+              style="text-decoration: line-through; font-size: 12px; line-height: 1; display: inline-block;">S</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- SECTION 3: CONTENT FORMAT -->
+      <div
+        style="border: 1px solid var(--border-color); padding: 8px; border-radius: var(--radius-md); background-color: #fafbfc; margin-bottom: 12px;">
+        <span
+          style="font-weight: 600; font-size: 10px; color: var(--primary); display: block; margin-bottom: 6px; text-transform: uppercase;">Nội
+          dung (Content Format)</span>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 6px; margin-bottom: 6px;">
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Font
+              chữ</label>
+            <select id="fmtContentFont"
+              style="width:100%; padding: 3px; font-size:11px; border: 1px solid var(--border-color); border-radius: var(--radius-md); height: 22px; margin-bottom: 0; box-sizing: border-box;">
+              <option value="">(Mặc định)</option>
+              <option value="Arial">Arial</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Calibri">Calibri</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Lexend">Lexend</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Georgia">Georgia</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Cỡ chữ</label>
+            <input type="number" id="fmtContentFontSize" placeholder="10" min="6" max="72"
+              style="width: 100%; box-sizing: border-box; padding: 3px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 11px; height: 22px; margin-bottom: 0;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; align-items: center;">
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Căn lề</label>
+            <select id="fmtContentAlign"
+              style="width:100%; padding: 3px; font-size:11px; border: 1px solid var(--border-color); border-radius: var(--radius-md); height: 22px; margin-bottom: 0; box-sizing: border-box;">
+              <option value="">(Mặc định)</option>
+              <option value="left">Trái</option>
+              <option value="center">Giữa</option>
+              <option value="right">Phải</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 11px; margin-bottom: 2px; color: var(--text-muted); display: block;">Màu
+              chữ</label>
+            <div style="display: flex; gap: 3px; align-items: center;">
+              <input type="color" id="fmtContentTextColorPicker" oninput="syncColorInput('content')"
+                style="width: 22px; height: 22px; border: 1px solid var(--border-color); padding: 0; cursor: pointer; border-radius: 4px; box-sizing: border-box; flex-shrink: 0; background: none;">
+              <input type="text" id="fmtContentTextColorText" placeholder="#000000" oninput="syncColorText('content')"
+                style="flex-grow: 1; min-width: 0; font-size: 10px; height: 22px; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0; box-sizing: border-box;">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: center; align-items: center; margin-top: 8px;">
+          <input type="checkbox" id="fmtContentBold" style="display: none;"
+            onchange="toggleToolbarBtnStyle('fmtContentBold', 'lblContentBold')">
+          <label class="toolbar-toggle-btn" id="lblContentBold" for="fmtContentBold" title="Bold (In đậm)">
+            <b style="font-weight: bold; font-size: 12px; line-height: 1; display: inline-block;">B</b>
+          </label>
+          <input type="checkbox" id="fmtContentItalic" style="display: none;"
+            onchange="toggleToolbarBtnStyle('fmtContentItalic', 'lblContentItalic')">
+          <label class="toolbar-toggle-btn" id="lblContentItalic" for="fmtContentItalic" title="Italic (In nghiêng)">
+            <i
+              style="font-style: italic; font-size: 12px; line-height: 1; display: inline-block; font-family: inherit;">I</i>
+          </label>
+          <input type="checkbox" id="fmtContentStrike" style="display: none;"
+            onchange="toggleToolbarBtnStyle('fmtContentStrike', 'lblContentStrike')">
+          <label class="toolbar-toggle-btn" id="lblContentStrike" for="fmtContentStrike"
+            title="Strikethrough (Gạch ngang)">
+            <span
+              style="text-decoration: line-through; font-size: 12px; line-height: 1; display: inline-block;">S</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-buttons" style="border-top: 1px solid var(--border-color); padding-top: 8px; margin-top: 0;">
+        <button class="btn btn-secondary" onclick="closeModal('headerFormatModal')"
+          style="padding: 4px 8px; font-size: 11px;">Hủy</button>
+        <button class="btn btn-primary" onclick="submitHeaderFormat()" style="padding: 4px 8px; font-size: 11px;">Xác
+          nhận</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ================================================
+         MODAL CÀI ĐẶT ĐỊNH DẠNG MẶC ĐỊNH (DEFAULT FORMATS)
+         ================================================ -->
+  <div id="defaultFormatsModal" class="modal" style="z-index: 1200;">
+    <div class="modal-content" style="width: 280px; max-width: 95%;">
+      <h3>Cài đặt mặc định</h3>
+      
+      <!-- Tab Headers -->
+      <div style="display: flex; border-bottom: 1px solid var(--border-color); margin-bottom: 10px;">
+        <button id="tabBtnDefaultHeader" class="btn" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid var(--primary); background: none; color: var(--primary); font-weight: 600; padding: 6px 0; font-size: 11px;" onclick="switchDefaultTab('header')">Header</button>
+        <button id="tabBtnDefaultContent" class="btn" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid transparent; background: none; color: var(--text-muted); font-weight: 500; padding: 6px 0; font-size: 11px;" onclick="switchDefaultTab('content')">Content</button>
+      </div>
+
+      <!-- Tab Content: Header Defaults -->
+      <div id="defaultTabHeader" style="display: block;">
+        <!-- Font -->
+        <label for="defHeaderFont">Font chữ</label>
+        <select id="defHeaderFont">
+          <option value="Arial">Arial</option>
+          <option value="Lexend">Lexend</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Inter">Inter</option>
+          <option value="Roboto">Roboto</option>
+          <option value="Calibri">Calibri</option>
+          <option value="Montserrat">Montserrat</option>
+        </select>
+
+        <!-- Font Size -->
+        <label for="defHeaderFontSize">Cỡ chữ</label>
+        <select id="defHeaderFontSize">
+          <option value="8">8 pt</option>
+          <option value="9">9 pt</option>
+          <option value="10">10 pt</option>
+          <option value="11">11 pt</option>
+          <option value="12">12 pt</option>
+          <option value="13">13 pt</option>
+          <option value="14">14 pt</option>
+          <option value="16">16 pt</option>
+          <option value="18">18 pt</option>
+        </select>
+
+        <!-- Toolbar: Bold, Italic, Strikethrough -->
+        <label>Định dạng kiểu</label>
+        <div style="display: flex; gap: 4px; margin-bottom: 10px;">
+          <input type="checkbox" id="defHeaderBold" style="display: none;" onchange="toggleToolbarBtnStyle('defHeaderBold', 'lblDefHeaderBold')">
+          <label id="lblDefHeaderBold" for="defHeaderBold" class="toolbar-toggle-btn"><b>B</b></label>
+
+          <input type="checkbox" id="defHeaderItalic" style="display: none;" onchange="toggleToolbarBtnStyle('defHeaderItalic', 'lblDefHeaderItalic')">
+          <label id="lblDefHeaderItalic" for="defHeaderItalic" class="toolbar-toggle-btn"><i>I</i></label>
+
+          <input type="checkbox" id="defHeaderStrike" style="display: none;" onchange="toggleToolbarBtnStyle('defHeaderStrike', 'lblDefHeaderStrike')">
+          <label id="lblDefHeaderStrike" for="defHeaderStrike" class="toolbar-toggle-btn"><span style="text-decoration: line-through;">S</span></label>
+        </div>
+
+        <!-- Text Color -->
+        <label for="defHeaderTextColorText">Màu chữ</label>
+        <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 10px;">
+          <input type="color" id="defHeaderTextColorPicker" style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 4px; padding: 0; cursor: pointer; flex-shrink: 0;" oninput="syncColorInputDef('header')">
+          <input type="text" id="defHeaderTextColorText" placeholder="#000000" style="margin-bottom: 0; height: 28px; box-sizing: border-box;" oninput="syncColorTextDef('header')">
+        </div>
+
+        <!-- Alignment -->
+        <label for="defHeaderAlign">Căn lề</label>
+        <select id="defHeaderAlign">
+          <option value="left">Trái</option>
+          <option value="center">Giữa</option>
+          <option value="right">Phải</option>
+        </select>
+
+        <!-- Column Width -->
+        <label>Độ rộng cột</label>
+        <div style="display: flex; gap: 12px; margin-bottom: 6px;">
+          <label style="display: inline-flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; color: var(--text-main); font-size: 11px;">
+            <input type="radio" name="defHeaderWidthType" id="defHeaderWidthAuto" value="auto" checked onclick="toggleDefWidthInput()"> Tự động
+          </label>
+          <label style="display: inline-flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; color: var(--text-main); font-size: 11px;">
+            <input type="radio" name="defHeaderWidthType" id="defHeaderWidthCustom" value="custom" onclick="toggleDefWidthInput()"> Nhập rộng
+          </label>
+        </div>
+        <div id="defHeaderCustomWidthArea" style="display: none; margin-bottom: 10px;">
+          <input type="number" id="defHeaderWidthValue" value="100" min="20" max="1000" style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; height: 28px;">
+        </div>
+
+        <!-- Row Height -->
+        <label for="defHeaderRowHeight">Chiều cao hàng (px)</label>
+        <input type="number" id="defHeaderRowHeight" value="24" min="15" max="100" style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; height: 28px; margin-bottom: 10px;">
+      </div>
+
+      <!-- Tab Content: Content Defaults -->
+      <div id="defaultTabContent" style="display: none;">
+        <!-- Font -->
+        <label for="defContentFont">Font chữ</label>
+        <select id="defContentFont">
+          <option value="Arial">Arial</option>
+          <option value="Lexend">Lexend</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Inter">Inter</option>
+          <option value="Roboto">Roboto</option>
+          <option value="Calibri">Calibri</option>
+          <option value="Montserrat">Montserrat</option>
+        </select>
+
+        <!-- Font Size -->
+        <label for="defContentFontSize">Cỡ chữ</label>
+        <select id="defContentFontSize">
+          <option value="8">8 pt</option>
+          <option value="9">9 pt</option>
+          <option value="10">10 pt</option>
+          <option value="11">11 pt</option>
+          <option value="12">12 pt</option>
+          <option value="13">13 pt</option>
+          <option value="14">14 pt</option>
+          <option value="16">16 pt</option>
+          <option value="18">18 pt</option>
+        </select>
+
+        <!-- Toolbar: Bold, Italic, Strikethrough -->
+        <label>Định dạng kiểu</label>
+        <div style="display: flex; gap: 4px; margin-bottom: 10px;">
+          <input type="checkbox" id="defContentBold" style="display: none;" onchange="toggleToolbarBtnStyle('defContentBold', 'lblDefContentBold')">
+          <label id="lblDefContentBold" for="defContentBold" class="toolbar-toggle-btn"><b>B</b></label>
+
+          <input type="checkbox" id="defContentItalic" style="display: none;" onchange="toggleToolbarBtnStyle('defContentItalic', 'lblDefContentItalic')">
+          <label id="lblDefContentItalic" for="defContentItalic" class="toolbar-toggle-btn"><i>I</i></label>
+
+          <input type="checkbox" id="defContentStrike" style="display: none;" onchange="toggleToolbarBtnStyle('defContentStrike', 'lblDefContentStrike')">
+          <label id="lblDefContentStrike" for="defContentStrike" class="toolbar-toggle-btn"><span style="text-decoration: line-through;">S</span></label>
+        </div>
+
+        <!-- Text Color -->
+        <label for="defContentTextColorText">Màu chữ</label>
+        <div style="display: flex; gap: 4px; align-items: center; margin-bottom: 10px;">
+          <input type="color" id="defContentTextColorPicker" style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 4px; padding: 0; cursor: pointer; flex-shrink: 0;" oninput="syncColorInputDef('content')">
+          <input type="text" id="defContentTextColorText" placeholder="#000000" style="margin-bottom: 0; height: 28px; box-sizing: border-box;" oninput="syncColorTextDef('content')">
+        </div>
+
+        <!-- Alignment -->
+        <label for="defContentAlign">Căn lề</label>
+        <select id="defContentAlign">
+          <option value="left">Trái</option>
+          <option value="center">Giữa</option>
+          <option value="right">Phải</option>
+        </select>
+
+        <!-- Row Height -->
+        <label for="defContentRowHeight">Chiều cao hàng (px)</label>
+        <input type="number" id="defContentRowHeight" value="20" min="15" max="100" style="width: 100%; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 12px; height: 28px; margin-bottom: 10px;">
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-buttons" style="border-top: 1px solid var(--border-color); padding-top: 10px; display: flex; justify-content: flex-end; gap: 6px;">
+        <button class="btn btn-secondary" onclick="closeModal('defaultFormatsModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="submitDefaultFormatsForm()">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+         MODAL XÁC NHẬN XÓA (CONFIRM)
+         ================================================ -->
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+      <h3 id="confirmTitle" style="color: var(--danger);">Xác nhận</h3>
+      <p id="confirmMessage" style="font-size: 12px; color: var(--text-main); margin-bottom: 15px; text-align: left;">
+      </p>
+      <div class="modal-buttons" style="border-top: none; padding-top: 0;">
+        <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Hủy</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+         MODAL THÔNG BÁO TÙY CHỈNH (ALERT)
+         ================================================ -->
+  <div id="alertModal" class="modal">
+    <div class="modal-content">
+      <h3>Thông báo</h3>
+      <p id="alertMessage" style="font-size: 12px; color: var(--text-main); margin-bottom: 15px; text-align: left;"></p>
+      <div class="modal-buttons" style="border-top: none; padding-top: 0;">
+        <button class="btn btn-primary" onclick="closeModal('alertModal')">Đồng ý</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================
+         MODAL THIẾT LẬP DATABASE (DATABASE CONFIG)
+         ================================================ -->
+  <div id="databaseModal" class="modal">
+    <div class="modal-content" style="width: 280px; max-height: 90vh;">
+      <h3>Thiết lập kho dữ liệu tổng</h3>
+      
+      <label for="dbNameInput">Tên DATABASE</label>
+      <input type="text" id="dbNameInput" value="DATABASE" placeholder="Ví dụ: DATABASE" style="margin-bottom: 8px;">
+
+      <label for="dbSortMechanism">Cơ chế sắp xếp</label>
+      <select id="dbSortMechanism" onchange="toggleDbSortFields()" style="margin-bottom: 8px; width: 100%; height: 28px; font-size: 11px; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: var(--radius-md); box-sizing: border-box;">
+        <option value="sheet">Sắp xếp theo sheet</option>
+        <option value="column">Sắp xếp theo cột</option>
+      </select>
+
+      <div id="dbSortColumnArea" style="display: none;">
+        <label for="dbSortColumn">Cột sắp xếp</label>
+        <select id="dbSortColumn" style="margin-bottom: 8px; width: 100%; height: 28px; font-size: 11px; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: var(--radius-md); box-sizing: border-box;">
+          <!-- Nạp động qua javascript -->
+        </select>
+
+        <label for="dbSortDirection">Cách sắp xếp</label>
+        <select id="dbSortDirection" style="margin-bottom: 12px; width: 100%; height: 28px; font-size: 11px; padding: 2px 4px; border: 1px solid var(--border-color); border-radius: var(--radius-md); box-sizing: border-box;">
+          <option value="asc">Tăng dần (A-Z, 0-9)</option>
+          <option value="desc">Giảm dần (Z-A, 9-0)</option>
+        </select>
+      </div>
+      
+      <label style="margin-bottom: 6px;">Chọn các sheet để liên kết:</label>
+      <div id="dbSheetsTree" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 6px; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; background-color: #fafbfc; margin-bottom: 12px; box-sizing: border-box; width: 100%;">
+        <!-- Danh sách sheet & folder sẽ được vẽ ở đây -->
+      </div>
+      
+      <div class="modal-buttons" style="border-top: 1px solid var(--border-color); padding-top: 10px; display: flex; justify-content: flex-end; gap: 6px;">
+        <button class="btn btn-secondary" onclick="closeModal('databaseModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="submitDatabaseConfig()">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var headers = [];
+    var templates = [];
+    var dropdownLists = [];
+    var _linkedSheetsCache = [];
+    var _dbConfigOriginal = null;
+
+    // Cấu hình định dạng mặc định (mặc định ban đầu trước khi load từ server)
+    var defaultFormats = {
+      header: {
+        font: "Arial",
+        fontSize: 10,
+        bold: true,
+        italic: false,
+        strikethrough: false,
+        textColor: "#000000",
+        align: "center",
+        columnWidthType: "auto",
+        columnWidth: 100,
+        rowHeight: 24
+      },
+      content: {
+        font: "Arial",
+        fontSize: 10,
+        bold: false,
+        italic: false,
+        strikethrough: false,
+        textColor: "#000000",
+        align: "center",
+        rowHeight: 20
+      }
+    };
+
+    // Object trung gian quản lý danh sách Header đang ghép dở của Template đang chỉnh sửa
+    var builderHeaders = []; // Cấu trúc: [ { headerId, isHidden, color, index } ]
+
+    var selectedColorHex = null;
+
+    // ---- PERFORMANCE OPTIMIZATION UTILITIES ----
+    var RENDER_CHUNK_SIZE = 30;
+    var _renderCache = {};
+    function _clearRenderCache() { _renderCache = {}; }
+    function _debounce(fn, wait) {
+      var timer;
+      return function() {
+        var args = arguments, ctx = this;
+        clearTimeout(timer);
+        timer = setTimeout(function() { fn.apply(ctx, args); }, wait);
+      };
+    }
+    function _chunkedRenderList(container, items, buildItemFn) {
+      var total = items.length;
+      if (total === 0) { container.innerHTML = buildItemFn(items, true); return; }
+      if (total <= RENDER_CHUNK_SIZE) { container.innerHTML = buildItemFn(items, true); return; }
+      container.innerHTML = '';
+      var idx = 0;
+      function nextChunk() {
+        var end = Math.min(idx + RENDER_CHUNK_SIZE, total);
+        container.insertAdjacentHTML('beforeend', buildItemFn(items.slice(idx, end), false));
+        idx = end;
+        if (idx < total) { setTimeout(nextChunk, 0); }
+      }
+      setTimeout(nextChunk, 0);
+    }
+
+    window.onload = function () {
+      if (window.self !== window.top) {
+        document.body.classList.add('in-iframe');
+      }
+      refreshData();
+      
+      // Bắt đầu vòng lặp đồng bộ ngầm thời gian thực (5 giây/lần)
+      var _debouncedTemplateRefresh = _debounce(function() { refreshData(); }, 300);
+      var lastTimestamp = "0";
+      setInterval(function() {
+        callApi('getLastChangedTimestamp', null, function(ts) {
+          if (ts && ts !== lastTimestamp) {
+            lastTimestamp = ts;
+            _debouncedTemplateRefresh();
+          }
+        });
+      }, 5000);
+    };
+
+    // API Caller helper
+    function callApi(action, data, onSuccess, onFailure) {
+      var mutationActions = [
+        'createCustomSheet', 'createFolder', 'deleteFolder', 'renameFolder', 
+        'changeFolderColor', 'duplicateFolder', 'moveSheetToFolder', 
+        'renameSheet', 'duplicateSheet', 'deleteSheet', 'changeSheetColor', 
+        'toggleSheetVisibility', 'toggleFolderVisibility', 'saveSheetOrder', 
+        'saveSheetComponents', 'changeBulkSheetsColor', 'deleteBulkSheets', 
+        'moveBulkSheetsToFolder', 'duplicateBulkSheets',
+        'saveHeader', 'deleteHeader', 'saveTemplate', 'deleteTemplate', 
+        'applyTemplate', 'saveTemplateDatabaseConfig', 'saveDefaultFormats'
+      ];
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (onSuccess) onSuccess(response);
+          
+          if (mutationActions.indexOf(action) > -1 && response && response.success) {
+            try {
+              window.parent.postMessage({ type: 'DATA_CHANGED' }, '*');
+            } catch(e) {}
+          }
+        })
+        .withFailureHandler(function (err) {
+          var errMsg = err.toString();
+          if (errMsg.indexOf("Bạn không có quyền truy cập") !== -1) {
+            google.script.run.showAccessDeniedAlert();
+            google.script.host.close();
+            return;
+          }
+          if (onFailure) {
+            onFailure(err);
+          } else {
+            showToast("Lỗi máy chủ: " + errMsg);
+          }
+        })
+        .handleApiRequest({ action: action, data: data });
+    }
+
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'REFRESH_DATA') {
+        refreshData();
+      }
+    });
+
+    function showToast(message) {
+      var toast = document.getElementById('status');
+      toast.innerText = message;
+      toast.style.display = "block";
+      setTimeout(function () {
+        toast.style.display = "none";
+      }, 3000);
+    }
+
+    function openModal(id) {
+      document.getElementById(id).style.display = "flex";
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    // Chuyển đổi tab trong modal cài đặt mặc định
+    function switchDefaultTab(tab) {
+      var btnHeader = document.getElementById('tabBtnDefaultHeader');
+      var btnContent = document.getElementById('tabBtnDefaultContent');
+      var paneHeader = document.getElementById('defaultTabHeader');
+      var paneContent = document.getElementById('defaultTabContent');
+
+      if (tab === 'header') {
+        btnHeader.style.color = 'var(--primary)';
+        btnHeader.style.borderBottom = '2px solid var(--primary)';
+        btnHeader.style.fontWeight = '600';
+        
+        btnContent.style.color = 'var(--text-muted)';
+        btnContent.style.borderBottom = '2px solid transparent';
+        btnContent.style.fontWeight = '500';
+
+        paneHeader.style.display = 'block';
+        paneContent.style.display = 'none';
+      } else {
+        btnContent.style.color = 'var(--primary)';
+        btnContent.style.borderBottom = '2px solid var(--primary)';
+        btnContent.style.fontWeight = '600';
+
+        btnHeader.style.color = 'var(--text-muted)';
+        btnHeader.style.borderBottom = '2px solid transparent';
+        btnHeader.style.fontWeight = '500';
+
+        paneHeader.style.display = 'none';
+        paneContent.style.display = 'block';
+      }
+    }
+
+    // Toggle hiển thị vùng nhập độ rộng cột thủ công
+    function toggleDefWidthInput() {
+      var isCustom = document.getElementById('defHeaderWidthCustom').checked;
+      document.getElementById('defHeaderCustomWidthArea').style.display = isCustom ? 'block' : 'none';
+    }
+
+    // Đồng bộ picker màu với ô nhập text cho modal cài đặt mặc định
+    function syncColorInputDef(section) {
+      if (section === 'header') {
+        var color = document.getElementById('defHeaderTextColorPicker').value;
+        document.getElementById('defHeaderTextColorText').value = color.toUpperCase();
+      } else {
+        var color = document.getElementById('defContentTextColorPicker').value;
+        document.getElementById('defContentTextColorText').value = color.toUpperCase();
+      }
+    }
+
+    function syncColorTextDef(section) {
+      var textId = (section === 'header') ? 'defHeaderTextColorText' : 'defContentTextColorText';
+      var pickerId = (section === 'header') ? 'defHeaderTextColorPicker' : 'defContentTextColorPicker';
+      var val = document.getElementById(textId).value.trim();
+      var hexRegex = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+      if (hexRegex.test(val)) {
+        if (!val.startsWith('#')) {
+          val = '#' + val;
+        }
+        document.getElementById(pickerId).value = val;
+      }
+    }
+
+    // Mở modal cài đặt định dạng mặc định
+    function openDefaultFormatModal() {
+      switchDefaultTab('header'); // Mặc định mở tab header
+
+      // Điền giá trị của Header Defaults
+      var h = defaultFormats.header || {};
+      document.getElementById('defHeaderFont').value = h.font || "Arial";
+      document.getElementById('defHeaderFontSize').value = h.fontSize || "10";
+      document.getElementById('defHeaderBold').checked = h.bold || false;
+      toggleToolbarBtnStyle('defHeaderBold', 'lblDefHeaderBold');
+      document.getElementById('defHeaderItalic').checked = h.italic || false;
+      toggleToolbarBtnStyle('defHeaderItalic', 'lblDefHeaderItalic');
+      document.getElementById('defHeaderStrike').checked = h.strikethrough || false;
+      toggleToolbarBtnStyle('defHeaderStrike', 'lblDefHeaderStrike');
+      
+      var hColor = h.textColor || "#000000";
+      document.getElementById('defHeaderTextColorText').value = hColor.toUpperCase();
+      document.getElementById('defHeaderTextColorPicker').value = hColor;
+      document.getElementById('defHeaderAlign').value = h.align || "center";
+
+      var widthType = h.columnWidthType || 'auto';
+      if (widthType === 'custom') {
+        document.getElementById('defHeaderWidthCustom').checked = true;
+        document.getElementById('defHeaderCustomWidthArea').style.display = 'block';
+      } else {
+        document.getElementById('defHeaderWidthAuto').checked = true;
+        document.getElementById('defHeaderCustomWidthArea').style.display = 'none';
+      }
+      document.getElementById('defHeaderWidthValue').value = h.columnWidth || 100;
+      document.getElementById('defHeaderRowHeight').value = h.rowHeight || 24;
+
+      // Điền giá trị của Content Defaults
+      var c = defaultFormats.content || {};
+      document.getElementById('defContentFont').value = c.font || "Arial";
+      document.getElementById('defContentFontSize').value = c.fontSize || "10";
+      document.getElementById('defContentBold').checked = c.bold || false;
+      toggleToolbarBtnStyle('defContentBold', 'lblDefContentBold');
+      document.getElementById('defContentItalic').checked = c.italic || false;
+      toggleToolbarBtnStyle('defContentItalic', 'lblDefContentItalic');
+      document.getElementById('defContentStrike').checked = c.strikethrough || false;
+      toggleToolbarBtnStyle('defContentStrike', 'lblDefContentStrike');
+      
+      var cColor = c.textColor || "#000000";
+      document.getElementById('defContentTextColorText').value = cColor.toUpperCase();
+      document.getElementById('defContentTextColorPicker').value = cColor;
+      document.getElementById('defContentAlign').value = c.align || "center";
+      document.getElementById('defContentRowHeight').value = c.rowHeight || 20;
+
+      openModal('defaultFormatsModal');
+    }
+
+    // Submit lưu cài đặt định dạng mặc định
+    function submitDefaultFormatsForm() {
+      var isCustom = document.getElementById('defHeaderWidthCustom').checked;
+      var widthVal = parseInt(document.getElementById('defHeaderWidthValue').value, 10);
+      var headerHeight = parseInt(document.getElementById('defHeaderRowHeight').value, 10);
+      var contentHeight = parseInt(document.getElementById('defContentRowHeight').value, 10);
+
+      if (isCustom && (isNaN(widthVal) || widthVal < 20 || widthVal > 1000)) {
+        showToast("Độ rộng cột mặc định phải từ 20 đến 1000 px.");
+        return;
+      }
+      if (isNaN(headerHeight) || headerHeight < 15 || headerHeight > 100) {
+        showToast("Chiều cao hàng tiêu đề phải từ 15 đến 100 px.");
+        return;
+      }
+      if (isNaN(contentHeight) || contentHeight < 15 || contentHeight > 100) {
+        showToast("Chiều cao hàng nội dung phải từ 15 đến 100 px.");
+        return;
+      }
+
+      var hColorVal = document.getElementById('defHeaderTextColorText').value.trim();
+      if (hColorVal && !hColorVal.startsWith('#')) hColorVal = '#' + hColorVal;
+      var cColorVal = document.getElementById('defContentTextColorText').value.trim();
+      if (cColorVal && !cColorVal.startsWith('#')) cColorVal = '#' + cColorVal;
+
+      var newDefaults = {
+        header: {
+          font: document.getElementById('defHeaderFont').value,
+          fontSize: parseInt(document.getElementById('defHeaderFontSize').value, 10),
+          bold: document.getElementById('defHeaderBold').checked,
+          italic: document.getElementById('defHeaderItalic').checked,
+          strikethrough: document.getElementById('defHeaderStrike').checked,
+          textColor: hColorVal || "#000000",
+          align: document.getElementById('defHeaderAlign').value,
+          columnWidthType: isCustom ? 'custom' : 'auto',
+          columnWidth: isCustom ? widthVal : 100,
+          rowHeight: headerHeight
+        },
+        content: {
+          font: document.getElementById('defContentFont').value,
+          fontSize: parseInt(document.getElementById('defContentFontSize').value, 10),
+          bold: document.getElementById('defContentBold').checked,
+          italic: document.getElementById('defContentItalic').checked,
+          strikethrough: document.getElementById('defContentStrike').checked,
+          textColor: cColorVal || "#000000",
+          align: document.getElementById('defContentAlign').value,
+          rowHeight: contentHeight
+        }
+      };
+
+      showToast("Đang lưu cài đặt mặc định...");
+      callApi('saveDefaultFormats', newDefaults, function(res) {
+        if (res && res.success) {
+          defaultFormats = newDefaults;
+          closeModal('defaultFormatsModal');
+          showToast(res.message);
+          
+          // Đồng bộ lại UI nếu có đang tạo/chỉnh sửa template
+          if (document.getElementById('templateEditView').style.display !== 'none') {
+            var hHeightInput = document.getElementById('templateHeaderCellHeight');
+            var cHeightInput = document.getElementById('templateContentCellHeight');
+            if (hHeightInput.value == "24" || hHeightInput.value == "") {
+              hHeightInput.value = newDefaults.header.rowHeight;
+            }
+            if (cHeightInput.value == "20" || cHeightInput.value == "") {
+              cHeightInput.value = newDefaults.content.rowHeight;
+            }
+          }
+        } else {
+          showToast("Lỗi: " + (res ? res.message : "Không lưu được cấu hình."));
+        }
+      });
+    }
+
+    function showCustomAlert(message) {
+      document.getElementById('alertMessage').innerText = message;
+      openModal('alertModal');
+    }
+
+    function showCustomConfirm(title, message, onConfirm, confirmText) {
+      document.getElementById('confirmTitle').innerText = title;
+      document.getElementById('confirmMessage').innerText = message;
+      var btn = document.getElementById('btnConfirmDelete');
+      btn.innerText = confirmText || 'Xóa';
+      btn.onclick = function () {
+        onConfirm();
+        closeModal('confirmModal');
+      };
+      openModal('confirmModal');
+    }
+
+    function refreshData(callback) {
+      _clearRenderCache();
+      callApi('getTemplateManagerData', null, function (response) {
+        if (response && response.success) {
+          headers = response.headers || [];
+          templates = response.templates || [];
+          dropdownLists = response.dropdownLists || [];
+          if (response.defaultFormats) {
+            defaultFormats = response.defaultFormats;
+          }
+          renderHeadersList();
+          renderTemplatesList();
+          if (typeof callback === 'function') {
+            callback();
+          }
+        } else {
+          showToast("Lỗi: " + (response ? response.message : "Không nhận được phản hồi từ server. Vui lòng kiểm tra từ khóa 'return' ở hàm handleApiRequest ở file đích."));
+        }
+      });
+    }
+
+    /* ================================================
+       A. LOGIC RENDER & CRUD CHO HEADERS (SECTION 2)
+       ================================================ */
+    function _buildHeaderCard(h) {
+      var typeText = "";
+      switch (h.dataType) {
+        case 'text': typeText = "Văn bản"; break;
+        case 'number': typeText = "Số"; break;
+        case 'date': typeText = "Ngày tháng"; break;
+        case 'checkbox': typeText = "Hộp kiểm"; break;
+        case 'dropdown': typeText = "Dropdown"; break;
+        case 'formula': typeText = "Công thức"; break;
+      }
+      var defText = "Không";
+      if (h.defaultValueType === 'userInput' || h.defaultValueType === 'dropdownOption') {
+        defText = h.defaultValue;
+      } else if (h.defaultValueType === 'today') { defText = "Today (Ngày hôm nay)";
+      } else if (h.defaultValueType === 'true') { defText = "True";
+      } else if (h.defaultValueType === 'false') { defText = "False"; }
+      var requiredBadge = h.required ? ' <span style="color:var(--danger);font-weight:700;font-size:11px;">*</span>' : '';
+      return '<div class="manager-card" onclick="onHeaderCardClick(event,\'' + h.id + '\')" style="cursor: pointer;">' +
+        '<div class="card-info">' +
+          '<span class="card-name">' + escapeHtml(h.name) + requiredBadge + '</span>' +
+          '<span class="card-subtext">Kiểu: ' + typeText + ' | Mặc định: ' + escapeHtml(defText) + '</span>' +
+        '</div>' +
+        '<div class="card-actions">' +
+          '<button class="btn-quick text-danger" onclick="event.stopPropagation(); triggerDeleteHeader(\'' + h.id + '\')" title="Xóa">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+              '<polyline points="3 6 5 6 21 6"></polyline>' +
+              '<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>' +
+            '</svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderHeadersList() {
+      var container = document.getElementById('headerList');
+      if (headers.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 15px 0; font-style: italic;">Chưa định nghĩa Header nào.</div>';
+        return;
+      }
+      _chunkedRenderList(container, headers, function(items, isFull) {
+        if (isFull) {
+          var html = "";
+          for (var i = 0; i < items.length; i++) { html += _buildHeaderCard(items[i]); }
+          return html;
+        }
+        var html = "";
+        for (var i = 0; i < items.length; i++) { html += _buildHeaderCard(items[i]); }
+        return html;
+      });
+    }
+
+    function onHeaderCardClick(event, id) {
+      if (event.target.closest('.text-danger')) {
+        return;
+      }
+      openEditHeaderModal(id);
+    }
+
+    function openCreateHeaderModal() {
+      document.getElementById('editHeaderId').value = "";
+      document.getElementById('headerName').value = "";
+      document.getElementById('headerDataType').value = "text";
+      document.getElementById('headerDataType').disabled = false;
+
+      onHeaderTypeChange();
+      document.getElementById('headerDefaultType').value = "none";
+      onDefaultTypeChange();
+
+      document.getElementById('headerModalTitle').innerText = "Thêm mới Header";
+      var toggle = document.getElementById('headerRequiredToggle');
+      toggle.dataset.required = "false";
+      toggle.classList.remove('active');
+      openModal('headerModal');
+    }
+
+    function openEditHeaderModal(id) {
+      var h = headers.filter(function (item) { return String(item.id) === String(id); })[0];
+      if (!h) return;
+
+      document.getElementById('editHeaderId').value = h.id;
+      document.getElementById('headerName').value = h.name;
+      document.getElementById('headerDataType').value = h.dataType;
+      document.getElementById('headerDataType').disabled = false;
+
+      onHeaderTypeChange();
+
+      if (h.dataType === 'dropdown') {
+        document.getElementById('dropdownLinkSelect').value = h.dropdownListId || "";
+        onDropdownLinkChange();
+      }
+
+      document.getElementById('headerDefaultType').value = h.defaultValueType;
+      onDefaultTypeChange();
+
+      // Gán default value tương ứng widget
+      if (h.defaultValueType === 'userInput' || h.defaultValueType === 'dropdownOption') {
+        var widget = document.getElementById('widgetVal');
+        if (widget) {
+          widget.value = h.defaultValue || "";
+        }
+      }
+
+      // Gán trạng thái bắt buộc
+      var toggle = document.getElementById('headerRequiredToggle');
+      var isRequired = h.required === true;
+      toggle.dataset.required = isRequired ? "true" : "false";
+      if (isRequired) { toggle.classList.add('active'); } else { toggle.classList.remove('active'); }
+
+      document.getElementById('headerModalTitle').innerText = "Cập nhật Header";
+      openModal('headerModal');
+    }
+
+    function toggleRequired(el) {
+      var isOn = el.dataset.required === "true";
+      if (isOn) {
+        el.dataset.required = "false";
+        el.classList.remove('active');
+      } else {
+        el.dataset.required = "true";
+        el.classList.add('active');
+      }
+    }
+
+    function onHeaderTypeChange() {
+      var type = document.getElementById('headerDataType').value;
+      var linkArea = document.getElementById('dropdownLinkArea');
+      var defaultTypeSelect = document.getElementById('headerDefaultType');
+
+      // Ẩn vùng liên kết dropdown mặc định
+      linkArea.style.display = "none";
+
+      // Tùy biến giá trị defaultTypeSelect tương thích
+      var opts = `<option value="none">None (Không có)</option>`;
+
+      if (type === 'text' || type === 'number' || type === 'formula') {
+        opts += `<option value="userInput">User input (Nhập thủ công)</option>`;
+      }
+      else if (type === 'date') {
+        opts += `<option value="today">Today (Ngày hiện tại)</option>`;
+        opts += `<option value="userInput">User input (Chọn ngày cụ thể)</option>`;
+      }
+      else if (type === 'checkbox') {
+        opts += `
+            <option value="true">True (Ô chọn sẵn)</option>
+            <option value="false">False (Hủy chọn sẵn)</option>
+          `;
+      }
+      else if (type === 'dropdown') {
+        opts += `<option value="dropdownOption">Tùy chọn liên kết</option>`;
+        linkArea.style.display = "block";
+
+        // Nạp các Dropdown lists có sẵn
+        var select = document.getElementById('dropdownLinkSelect');
+        select.innerHTML = "";
+        dropdownLists.forEach(function (dl) {
+          select.innerHTML += `<option value="${dl.id}">${escapeHtml(dl.name)}</option>`;
+        });
+        onDropdownLinkChange();
+      }
+
+      defaultTypeSelect.innerHTML = opts;
+      onDefaultTypeChange();
+    }
+
+    function onDropdownLinkChange() {
+      onDefaultTypeChange();
+    }
+
+    function onDefaultTypeChange() {
+      var defType = document.getElementById('headerDefaultType').value;
+      var type = document.getElementById('headerDataType').value;
+      var valueArea = document.getElementById('defaultValueArea');
+      var container = document.getElementById('defaultValueWidgetContainer');
+
+      container.innerHTML = "";
+
+      if (defType === 'userInput') {
+        valueArea.style.display = "block";
+        if (type === 'number') {
+          container.innerHTML = `<input type="text" id="widgetVal" placeholder="Ví dụ: 100" style="margin-bottom:0;">`;
+        } else if (type === 'date') {
+          container.innerHTML = `<input type="text" id="widgetVal" placeholder="YYYY-MM-DD" style="margin-bottom:0;">`;
+        } else {
+          container.innerHTML = `<input type="text" id="widgetVal" placeholder="Nhập giá trị mặc định..." style="margin-bottom:0;">`;
+        }
+      }
+      else if (defType === 'dropdownOption') {
+        valueArea.style.display = "block";
+        var dlId = document.getElementById('dropdownLinkSelect').value;
+        var dl = dropdownLists.filter(function (item) { return item.id === dlId; })[0];
+
+        var selectHtml = `<select id="widgetVal" style="margin-bottom:0;">`;
+        if (dl && dl.options) {
+          dl.options.forEach(function (opt) {
+            selectHtml += `<option value="${opt}">${escapeHtml(opt)}</option>`;
+          });
+        }
+        selectHtml += `</select>`;
+        container.innerHTML = selectHtml;
+      }
+      else {
+        valueArea.style.display = "none";
+      }
+    }
+
+    function submitHeaderForm() {
+      var id = document.getElementById('editHeaderId').value;
+      var name = document.getElementById('headerName').value.trim();
+      var dataType = document.getElementById('headerDataType').value;
+      var dropdownListId = (dataType === 'dropdown') ? document.getElementById('dropdownLinkSelect').value : null;
+      var defaultValueType = document.getElementById('headerDefaultType').value;
+
+      var defaultValue = "";
+      if (defaultValueType === 'userInput' || defaultValueType === 'dropdownOption') {
+        var widget = document.getElementById('widgetVal');
+        if (widget) {
+          defaultValue = widget.value.trim();
+        }
+      }
+
+      if (!name) {
+        showCustomAlert("Vui lòng điền tên cột Header!");
+        return;
+      }
+
+      closeModal('headerModal');
+      showToast("Đang lưu Header...");
+
+      var required = document.getElementById('headerRequiredToggle').dataset.required === "true";
+
+      callApi('saveHeader', {
+        id: id || null,
+        name: name,
+        dataType: dataType,
+        dropdownListId: dropdownListId,
+        defaultValueType: defaultValueType,
+        defaultValue: defaultValue,
+        required: required
+      }, function (res) {
+        if (res) {
+          showToast(res.message);
+          if (res.success) refreshData();
+        } else {
+          showToast("Lỗi: Không nhận được phản hồi từ server.");
+        }
+      });
+    }
+
+    function triggerDeleteHeader(id) {
+      var h = headers.filter(function (item) { return String(item.id) === String(id); })[0];
+      if (!h) return;
+
+      showCustomConfirm(
+        "Xóa Header toàn cục",
+        "Bạn có chắc chắn muốn XÓA VĨNH VIỄN Header '" + h.name + "'? Header này cũng sẽ tự động bị loại bỏ khỏi mọi bản mẫu có chứa nó.",
+        function () {
+          showToast("Đang xóa Header...");
+          callApi('deleteHeader', id, function (res) {
+            if (res) {
+              showToast(res.message);
+              if (res.success) refreshData();
+            } else {
+              showToast("Lỗi: Không nhận được phản hồi từ server.");
+            }
+          });
+        }
+      );
+    }
+
+    /* ================================================
+       B. LOGIC RENDER & CRUD CHO TEMPLATES (SECTION 1)
+       ================================================ */
+    function _buildTemplateCard(t) {
+      var count = t.headers ? t.headers.length : 0;
+      return '<div class="manager-card" onclick="openEditTemplateView(\'' + t.id + '\')" style="cursor: pointer;">' +
+        '<div class="card-info">' +
+          '<span class="card-name">' + escapeHtml(t.name) + '</span>' +
+          '<span class="card-subtext">Có ' + count + ' cột Header liên kết</span>' +
+        '</div>' +
+        '<div class="card-actions" onclick="event.stopPropagation();">' +
+          '<button class="btn-quick text-danger" onclick="triggerDeleteTemplate(\'' + t.id + '\')" title="Xóa">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+              '<polyline points="3 6 5 6 21 6"></polyline>' +
+              '<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>' +
+            '</svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderTemplatesList() {
+      var container = document.getElementById('templateList');
+      if (templates.length === 0) {
+        container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 15px 0; font-style: italic;">Chưa tạo bản mẫu nào.</div>';
+        return;
+      }
+      _chunkedRenderList(container, templates, function(items, isFull) {
+        var html = "";
+        for (var i = 0; i < items.length; i++) { html += _buildTemplateCard(items[i]); }
+        return html;
+      });
+    }
+
+    /* ================================================
+       CƠ CHẾ MỞ INLINE VIEW CHO TEMPLATE (GIỐNG DROPDOWN RULE)
+       ================================================ */
+    function openCreateTemplateView() {
+      document.getElementById('editTemplateId').value = "";
+      document.getElementById('templateName').value = "";
+      builderHeaders = [];
+
+      // Reset formatting values to defaults
+      document.getElementById('templateHeaderCellHeight').value = (defaultFormats && defaultFormats.header && defaultFormats.header.rowHeight) || "24";
+      document.getElementById('templateContentCellHeight').value = (defaultFormats && defaultFormats.content && defaultFormats.content.rowHeight) || "20";
+      document.getElementById('templateDeleteExtraColumns').checked = false;
+      document.getElementById('templateApplyTableBorder').checked = true;
+
+      renderBuilderList();
+
+      document.getElementById('templateEditTitle').innerText = "Tạo Bản mẫu mới";
+      document.getElementById('templateLinkBtn').style.display = "none";
+
+      // Chuyển view
+      document.getElementById('mainView').style.display = "none";
+      document.getElementById('templateEditView').style.display = "flex";
+    }
+
+    function openEditTemplateView(id) {
+      var t = templates.filter(function (item) { return String(item.id) === String(id); })[0];
+      if (!t) return;
+
+      document.getElementById('editTemplateId').value = t.id;
+      document.getElementById('templateName').value = t.name;
+
+      // Load formatting values
+      document.getElementById('templateHeaderCellHeight').value = t.headerCellHeight || "24";
+      document.getElementById('templateContentCellHeight').value = t.contentCellHeight || "20";
+      document.getElementById('templateDeleteExtraColumns').checked = !!t.deleteExtraColumns;
+      document.getElementById('templateApplyTableBorder').checked = t.applyTableBorder !== undefined ? !!t.applyTableBorder : true;
+
+      builderHeaders = JSON.parse(JSON.stringify(t.headers || []));
+      builderHeaders.sort(function (a, b) { return a.index - b.index; });
+
+      renderBuilderList();
+
+      document.getElementById('templateEditTitle').innerText = "Cấu hình: " + t.name;
+      document.getElementById('templateLinkBtn').style.display = "inline-flex";
+
+      // Chuyển view
+      document.getElementById('mainView').style.display = "none";
+      document.getElementById('templateEditView').style.display = "flex";
+    }
+
+    function closeTemplateEditView() {
+      document.getElementById('templateEditView').style.display = "none";
+      document.getElementById('mainView').style.display = "flex";
+    }
+
+    function openTemplateLinkView() {
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      var templateName = t ? t.name : "";
+      document.getElementById('linkedSheetsTitle').innerText = "Sheets liên kết với: " + templateName;
+
+      // Lưu snapshot cấu hình gốc để có thể khôi phục khi nhấn Hủy
+      _dbConfigOriginal = t && t.databaseConfig ? JSON.parse(JSON.stringify(t.databaseConfig)) : null;
+
+      var container = document.getElementById('linkedSheetsList');
+      container.innerHTML = "<div style='color: var(--text-muted); text-align: center; padding: 20px 0; font-style: italic;'>Đang tải...</div>";
+
+      // Chuyển view
+      document.getElementById('templateEditView').style.display = "none";
+      document.getElementById('templateSheetsLinkView').style.display = "flex";
+
+      callApi('getLinkedSheets', { templateId: templateId }, function(response) {
+        if (response && response.success) {
+          _linkedSheetsCache = response.sheets;
+          renderLinkedSheets(_linkedSheetsCache);
+        } else {
+          container.innerHTML = "<div style='color: var(--danger); text-align: center; padding: 20px 0;'>" + (response ? response.message : "Lỗi tải liên kết.") + "</div>";
+        }
+      }, function(err) {
+        container.innerHTML = "<div style='color: var(--danger); text-align: center; padding: 20px 0;'>Lỗi kết nối máy chủ.</div>";
+      });
+    }
+
+    function backToTemplateEditView() {
+      document.getElementById('templateSheetsLinkView').style.display = "none";
+      document.getElementById('templateEditView').style.display = "flex";
+    }
+
+    function renderLinkedSheets(sheets) {
+      var templateId = document.getElementById('editTemplateId').value;
+      var template = templates.filter(function (t) { return String(t.id) === String(templateId); })[0];
+      var dbConfig = template ? template.databaseConfig : null;
+      
+      var container = document.getElementById('linkedSheetsList');
+      var dashedCard = document.getElementById('addDbDashedCard');
+      
+      if (dbConfig && dbConfig.dbName) {
+        if (dashedCard) dashedCard.style.display = 'none';
+      } else {
+        if (dashedCard) dashedCard.style.display = 'flex';
+      }
+      
+      if (!sheets || sheets.length === 0) {
+        container.innerHTML = "<div style='color: var(--text-muted); text-align: center; padding: 20px 0; font-style: italic;'>Không có sheet nào liên kết với bản mẫu này.</div>";
+        return;
+      }
+
+      var html = "";
+      var dbLinkedSheets = (dbConfig && dbConfig.linkedSheets) ? dbConfig.linkedSheets : [];
+      var dbName = (dbConfig && dbConfig.dbName) ? dbConfig.dbName : "";
+      
+      // 1. Nếu có cấu hình database, vẽ DATABASE card đầu tiên
+      if (dbName) {
+        html += `
+          <div class="folder-block">
+            <div class="folder-card" style="margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 8px; flex-grow: 1; min-width: 0;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                <span style="font-weight: 600; font-size: 12px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.3px;">${escapeHtml(dbName)}</span>
+                <span style="background-color: #ecfdf5; color: #10b981; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 9999px; border: 1px solid #a7f3d0; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Database</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 2px; flex-shrink: 0;">
+                <button class="btn-quick text-muted" onclick="toggleDatabaseProtection()" title="${(dbConfig && dbConfig.enableProtection) ? 'Tắt bảo vệ cột' : 'Bật bảo vệ cột'}" style="padding: 4px; display: flex; align-items: center; justify-content: center;">
+                  ${(dbConfig && dbConfig.enableProtection)
+                    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>'}
+                </button>
+                <div class="kebab-menu-container">
+                  <button class="btn-quick text-muted" onclick="toggleDbKebabMenu(event)" title="Tác vụ DATABASE" style="padding: 4px; display: flex; align-items: center; justify-content: center;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <circle cx="12" cy="5" r="1.5"></circle>
+                      <circle cx="12" cy="12" r="1.5"></circle>
+                      <circle cx="12" cy="19" r="1.5"></circle>
+                    </svg>
+                  </button>
+                  <div class="kebab-dropdown" id="dbKebabDropdown" style="right: 0; top: 24px;">
+                    <button onclick="event.stopPropagation(); closeAllDbKebabs(); openDatabaseModal();">Tùy chỉnh</button>
+                    <button class="text-danger" onclick="event.stopPropagation(); closeAllDbKebabs(); deleteDatabaseConfig(event);">Xóa liên hệ</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder-sheets-container">
+        `;
+        
+        // Vẽ các sheet thành phần thụt lề có đường nối nhánh
+        dbLinkedSheets.forEach(function(sheetName, idx) {
+          html += `
+            <div class="sheet-card" style="margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;" data-name="${escapeHtml(sheetName)}">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex-grow: 1;">
+                
+                <!-- Nút Reorder Up/Down đặt bên trái tên sheet -->
+                <div class="order-buttons">
+                  <button class="order-btn" onclick="moveDbLinkedSheet(event, ${idx}, 'up')" ${idx === 0 ? 'disabled style="visibility: hidden;"' : ''} title="Di chuyển lên">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                  </button>
+                  <button class="order-btn" onclick="moveDbLinkedSheet(event, ${idx}, 'down')" ${idx === dbLinkedSheets.length - 1 ? 'disabled style="visibility: hidden;"' : ''} title="Di chuyển xuống">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                </div>
+
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                <span style="font-weight: 500; font-size: 11.5px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(sheetName)}</span>
+                <span style="background-color: #eff6ff; color: #3b82f6; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 9999px; border: 1px solid #bfdbfe; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Thành phần</span>
+              </div>
+              
+              <button class="btn-quick text-muted" onclick="unlinkSheetFromDatabase(event, '${escapeHtml(sheetName)}')" title="Hủy liên kết với DATABASE" style="padding: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  <line x1="8" y1="16" x2="16" y2="8"></line>
+                </svg>
+              </button>
+            </div>
+          `;
+        });
+        
+        html += `
+            </div>
+          </div>
+        `;
+      }
+      
+      // 2. Các sheet liên kết ngoài cấp root (không bao gồm chính database sheet)
+      sheets.forEach(function(sheet) {
+        if (dbLinkedSheets.indexOf(sheet.name) === -1 && sheet.name !== dbName) {
+          html += `
+            <div class="manager-card" style="margin-bottom: 6px; cursor: default; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex-grow: 1;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                <span style="font-weight: 500; font-size: 11.5px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(sheet.name)}</span>
+                <span style="background-color: #f1f5f9; color: #64748b; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 9999px; border: 1px solid #cbd5e1; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0;">Chưa liên kết</span>
+              </div>
+              ${dbName ? `
+                <button class="btn-quick text-muted" onclick="linkSheetToDatabase(event, '${escapeHtml(sheet.name)}')" title="Liên kết với DATABASE" style="padding: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: var(--transition);">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                  </svg>
+                </button>
+              ` : ''}
+            </div>
+          `;
+        }
+      });
+      
+      container.innerHTML = html;
+
+      var actionBar = document.getElementById('dbActionBar');
+      if (dbConfig && dbConfig.dbName) {
+        actionBar.style.display = 'flex';
+      } else {
+        actionBar.style.display = 'none';
+      }
+    }
+
+    function deleteDatabaseConfig(event) {
+      if (event) event.stopPropagation();
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      var dbName = t && t.databaseConfig ? t.databaseConfig.dbName : "DATABASE";
+
+      showCustomConfirm(
+        "Xóa cấu hình DATABASE",
+        "Bạn có chắc chắn muốn XÓA cấu hình DATABASE này không? (Thao tác này chỉ xóa liên kết cấu hình, không xóa sheet vật lý '" + dbName + "' trên bảng tính).",
+        function () {
+          showToast("Đang xóa cấu hình...");
+          callApi('saveTemplateDatabaseConfig', {
+            templateId: templateId,
+            dbName: null,
+            linkedSheets: []
+          }, function (res) {
+            if (res && res.success) {
+              showToast("Đã xóa cấu hình database.");
+              refreshData(function() {
+                openTemplateLinkView();
+                try {
+                  window.parent.postMessage({ type: 'DATA_CHANGED' }, '*');
+                } catch(e){}
+              });
+            } else {
+              showToast("Lỗi: " + (res ? res.message : "Không xóa được cấu hình."));
+            }
+          }, function (err) {
+            showToast("Lỗi kết nối máy chủ: " + err.toString());
+          });
+        }
+      );
+    }
+
+    function linkSheetToDatabase(event, sheetName) {
+      if (event) event.stopPropagation();
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      if (!t || !t.databaseConfig) return;
+
+      var dbConfig = t.databaseConfig;
+      if (dbConfig.linkedSheets.indexOf(sheetName) === -1) {
+        dbConfig.linkedSheets.push(sheetName);
+      }
+
+      renderLinkedSheets(_linkedSheetsCache);
+    }
+
+    function unlinkSheetFromDatabase(event, sheetName) {
+      if (event) event.stopPropagation();
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      if (!t || !t.databaseConfig) return;
+
+      var dbConfig = t.databaseConfig;
+      dbConfig.linkedSheets = dbConfig.linkedSheets.filter(function(name) { return name !== sheetName; });
+
+      renderLinkedSheets(_linkedSheetsCache);
+    }
+
+    function showLoadingOverlay(text) {
+      document.getElementById('loadingOverlayText').innerText = text || 'Đang xử lý...';
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoadingOverlay() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    function syncLinkedSheets() {
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      showLoadingOverlay('Đang đồng bộ các sheet liên kết...');
+      
+      callApi('syncTemplateSheets', { templateId: templateId }, function(response) {
+        hideLoadingOverlay();
+        if (response && response.success) {
+          showToast(response.message || "Đồng bộ thành công!");
+        } else {
+          showToast("Lỗi: " + (response ? response.message : "Đồng bộ thất bại."));
+        }
+      }, function(err) {
+        hideLoadingOverlay();
+        showToast("Lỗi kết nối khi đồng bộ: " + err.toString());
+      });
+    }
+
+    /* ================================================
+       LOGIC CHO MODAL CHỌN HEADERS LIÊN KẾT (GIỐNG DROPDOWNS TRONG 04.1)
+       ================================================ */
+    function openHeaderSelector() {
+      var container = document.getElementById('headerSelectorList');
+      container.innerHTML = "";
+
+      if (headers.length === 0) {
+        container.innerHTML = "<p style='color: var(--text-muted); font-style: italic; font-size: 12px; margin: 10px 0; text-align: center;'>Vui lòng định nghĩa ít nhất một Header toàn cục ở bên dưới.</p>";
+      } else {
+        headers.forEach(function (h) {
+          // Kiểm tra xem Header đã được chọn trong template chưa
+          var isChecked = builderHeaders.some(function (item) { return item.headerId === h.id; });
+          var div = document.createElement('div');
+          div.className = "selector-item";
+
+          var typeText = "";
+          switch (h.dataType) {
+            case 'text': typeText = "Text"; break;
+            case 'number': typeText = "Num"; break;
+            case 'date': typeText = "Date"; break;
+            case 'checkbox': typeText = "Chk"; break;
+            case 'dropdown': typeText = "Drop"; break;
+            case 'formula': typeText = "Form"; break;
+          }
+
+          div.innerHTML = `
+              <input type="checkbox" id="chk_sel_${h.id}" value="${h.id}" ${isChecked ? 'checked' : ''}>
+              <label for="chk_sel_${h.id}">${escapeHtml(h.name)} <span style="color: var(--text-muted); font-size: 10.5px;">(${typeText})</span></label>
+            `;
+          container.appendChild(div);
+        });
+      }
+
+      openModal('headerSelectorModal');
+    }
+
+    function applyHeaderSelection() {
+      var checkboxes = document.querySelectorAll('#headerSelectorList input[type="checkbox"]');
+      var newSelected = [];
+
+      checkboxes.forEach(function (chk) {
+        if (chk.checked) {
+          var id = chk.value;
+          var existing = builderHeaders.find(function (item) { return String(item.headerId) === String(id); });
+          if (existing) {
+            newSelected.push(existing);
+          } else {
+            newSelected.push({
+              headerId: id,
+              isHidden: false,
+              color: null,
+              index: newSelected.length
+            });
+          }
+        }
+      });
+
+      // Re-index lại các phần tử được chọn để không bị nhảy thứ tự
+      newSelected.forEach(function (item, idx) {
+        item.index = idx;
+      });
+
+      builderHeaders = newSelected;
+      renderBuilderList();
+      closeModal('headerSelectorModal');
+    }
+
+    function renderBuilderList() {
+      var container = document.getElementById('builderList');
+      if (builderHeaders.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted); font-size:11px; text-align: center; padding: 10px 0; font-style: italic;">Chưa chèn Header nào vào bản mẫu này.</div>`;
+        return;
+      }
+
+      var html = "";
+      builderHeaders.forEach(function (item, idx) {
+        var headerDef = headers.filter(function (h) { return String(h.id) === String(item.headerId); })[0];
+        var name = headerDef ? headerDef.name : "(Đã bị xóa)";
+
+        var isFirst = (idx === 0);
+        var isLast = (idx === builderHeaders.length - 1);
+        var bgStyle = item.color ? `style="background-color: ${item.color};"` : '';
+
+        html += `
+            <div class="builder-card" ${bgStyle} onclick="onBuilderCardClick(event, ${idx})" style="display: flex; align-items: center; padding: 6px 8px; box-sizing: border-box;">
+              <!-- 1. Nút di chuyển vị trí (trên dưới) dạng chevrons xếp dọc đặt bên trái tên -->
+              <div class="order-buttons" style="margin-right: 6px;">
+                <button class="order-btn" onclick="moveBuilderHeader(event, ${idx}, 'up')" ${isFirst ? 'disabled' : ''} title="Di chuyển lên">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
+                <button class="order-btn" onclick="moveBuilderHeader(event, ${idx}, 'down')" ${isLast ? 'disabled' : ''} title="Di chuyển xuống">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+              
+              <!-- 2. Tên header -->
+              <div style="display:flex; flex-direction:column; min-width:0; flex-grow:1;">
+                <span style="font-weight: 500; font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(name)}</span>
+              </div>
+              
+              <!-- 3. Icon thùng rác (delete) -->
+              <div style="display:flex; align-items:center; gap:2px; flex-shrink:0;">
+                <!-- Nút thùng rác xóa khỏi template -->
+                <button class="btn-quick text-danger" onclick="removeBuilderHeader('${item.headerId}', '${escapeJsString(name)}')" title="Loại bỏ">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function moveBuilderHeader(event, idx, direction) {
+      if (event) event.stopPropagation();
+      var targetIdx = (direction === 'up') ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= builderHeaders.length) return;
+
+      animateBuilderSwap(idx, targetIdx);
+    }
+
+    function animateBuilderSwap(idx, targetIdx) {
+      var container = document.getElementById('builderList');
+      if (!container) return;
+
+      var cards = Array.from(container.children).filter(function (child) {
+        return child.classList.contains('builder-card');
+      });
+
+      var currentCard = cards[idx];
+      var targetCard = cards[targetIdx];
+
+      if (currentCard && targetCard) {
+        var offset = targetCard.offsetTop - currentCard.offsetTop;
+
+        currentCard.style.pointerEvents = 'none';
+        targetCard.style.pointerEvents = 'none';
+
+        currentCard.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+        currentCard.style.transform = 'translateY(' + offset + 'px)';
+
+        targetCard.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+        targetCard.style.transform = 'translateY(' + (-offset) + 'px)';
+
+        setTimeout(function () {
+          currentCard.style.transform = '';
+          currentCard.style.transition = '';
+          currentCard.style.pointerEvents = '';
+
+          targetCard.style.transform = '';
+          targetCard.style.transition = '';
+          targetCard.style.pointerEvents = '';
+
+          var temp = builderHeaders[idx];
+          builderHeaders[idx] = builderHeaders[targetIdx];
+          builderHeaders[targetIdx] = temp;
+
+          builderHeaders.forEach(function (item, i) {
+            item.index = i;
+          });
+
+          renderBuilderList();
+        }, 250);
+      } else {
+        var temp = builderHeaders[idx];
+        builderHeaders[idx] = builderHeaders[targetIdx];
+        builderHeaders[targetIdx] = temp;
+
+        builderHeaders.forEach(function (item, i) {
+          item.index = i;
+        });
+        renderBuilderList();
+      }
+    }
+
+    function removeBuilderHeader(headerId, name) {
+      showCustomConfirm(
+        "Loại bỏ Header",
+        "Bạn có chắc chắn muốn loại bỏ header '" + name + "' khỏi bản mẫu này không?",
+        function () {
+          builderHeaders = builderHeaders.filter(function (item) {
+            return item.headerId !== headerId;
+          });
+
+          builderHeaders.forEach(function (item, i) {
+            item.index = i;
+          });
+
+          renderBuilderList();
+        }
+      );
+    }
+
+    function onBuilderCardClick(event, idx) {
+      if (event.target.closest('.order-btn') || event.target.closest('.text-danger')) {
+        return;
+      }
+      openHeaderFormatModal(idx);
+    }
+
+    function toggleFmtColorGrid() {
+      var grid = document.getElementById('fmtHeaderCardColorGrid');
+      if (grid) {
+        grid.style.display = (grid.style.display === 'none') ? 'block' : 'none';
+      }
+    }
+
+    function selectFmtCardColor(color) {
+      var idx = document.getElementById('formatCardHeaderIdx').value;
+      if (idx !== "") {
+        builderHeaders[idx].color = color;
+
+        var subEl = document.getElementById('fmtHeaderNameSubtitle');
+        if (subEl) {
+          subEl.style.backgroundColor = color || '#f1f5f9';
+        }
+
+        var options = document.querySelectorAll('.color-option-fmt');
+        options.forEach(function (opt) {
+          opt.classList.remove('active');
+          if (color && opt.getAttribute('data-color') === color) {
+            opt.classList.add('active');
+          }
+        });
+
+        renderBuilderList();
+      }
+
+      var grid = document.getElementById('fmtHeaderCardColorGrid');
+      if (grid) grid.style.display = 'none';
+    }
+
+    // Điều khiển cấu hình định dạng cột (Header & Content formatting + Column width)
+    function openHeaderFormatModal(idx) {
+      document.getElementById('formatCardHeaderIdx').value = idx;
+      var item = builderHeaders[idx];
+
+      // Lấy tên thật của Header từ danh sách headers toàn cục
+      var headerDef = headers.filter(function (h) { return String(h.id) === String(item.headerId); })[0];
+      var headerName = headerDef ? headerDef.name : "(Đã bị xóa)";
+
+      // Cập nhật phụ đề tên header đang sửa
+      var subEl = document.getElementById('fmtHeaderNameSubtitle');
+      if (subEl) {
+        subEl.innerText = "Cột: " + headerName;
+        subEl.style.backgroundColor = item.color || '#f1f5f9';
+      }
+
+      // Reset hiển thị bảng chọn màu và highlight
+      var grid = document.getElementById('fmtHeaderCardColorGrid');
+      if (grid) grid.style.display = 'none';
+
+      var options = document.querySelectorAll('.color-option-fmt');
+      options.forEach(function (opt) {
+        opt.classList.remove('active');
+        if (item.color && opt.getAttribute('data-color') === item.color) {
+          opt.classList.add('active');
+        }
+      });
+
+      // Column Width
+      var widthType = item.widthType || 'auto';
+      var widthVal = item.width || 100;
+      if (widthType === 'custom') {
+        document.getElementById('fmtWidthTypeCustom').checked = true;
+        document.getElementById('fmtCustomWidthArea').style.display = 'block';
+      } else {
+        document.getElementById('fmtWidthTypeAuto').checked = true;
+        document.getElementById('fmtCustomWidthArea').style.display = 'none';
+      }
+      document.getElementById('fmtWidthValue').value = widthVal;
+
+      // Header format
+      var hFmt = item.headerFormat || {};
+      document.getElementById('fmtHeaderFont').value = hFmt.font || "";
+      document.getElementById('fmtHeaderFontSize').value = hFmt.fontSize || "";
+      document.getElementById('fmtHeaderAlign').value = hFmt.align || "";
+      document.getElementById('fmtHeaderBold').checked = hFmt.bold || false;
+      toggleToolbarBtnStyle('fmtHeaderBold', 'lblHeaderBold');
+      document.getElementById('fmtHeaderItalic').checked = hFmt.italic || false;
+      toggleToolbarBtnStyle('fmtHeaderItalic', 'lblHeaderItalic');
+      document.getElementById('fmtHeaderStrike').checked = hFmt.strikethrough || false;
+      toggleToolbarBtnStyle('fmtHeaderStrike', 'lblHeaderStrike');
+      var hColor = hFmt.textColor || "";
+      document.getElementById('fmtHeaderTextColorText').value = hColor;
+      document.getElementById('fmtHeaderTextColorPicker').value = hColor || "#000000";
+
+      // Content format
+      var cFmt = item.contentFormat || {};
+      document.getElementById('fmtContentFont').value = cFmt.font || "";
+      document.getElementById('fmtContentFontSize').value = cFmt.fontSize || "";
+      document.getElementById('fmtContentAlign').value = cFmt.align || "";
+      document.getElementById('fmtContentBold').checked = cFmt.bold || false;
+      toggleToolbarBtnStyle('fmtContentBold', 'lblContentBold');
+      document.getElementById('fmtContentItalic').checked = cFmt.italic || false;
+      toggleToolbarBtnStyle('fmtContentItalic', 'lblContentItalic');
+      document.getElementById('fmtContentStrike').checked = cFmt.strikethrough || false;
+      toggleToolbarBtnStyle('fmtContentStrike', 'lblContentStrike');
+      var cColor = cFmt.textColor || "";
+      document.getElementById('fmtContentTextColorText').value = cColor;
+      document.getElementById('fmtContentTextColorPicker').value = cColor || "#000000";
+
+      // Đóng kebab dropdown tương ứng
+      var dropdown = document.getElementById('headerKebabDropdown_' + idx);
+      if (dropdown) dropdown.style.display = 'none';
+
+      openModal('headerFormatModal');
+    }
+
+    function toggleFmtCustomWidthInput() {
+      var isCustom = document.getElementById('fmtWidthTypeCustom').checked;
+      document.getElementById('fmtCustomWidthArea').style.display = isCustom ? 'block' : 'none';
+    }
+
+    function toggleToolbarBtnStyle(inputId, labelId) {
+      var isChecked = document.getElementById(inputId).checked;
+      var lbl = document.getElementById(labelId);
+      if (isChecked) {
+        lbl.classList.add('active');
+      } else {
+        lbl.classList.remove('active');
+      }
+    }
+
+    function syncColorInput(section) {
+      if (section === 'header') {
+        var color = document.getElementById('fmtHeaderTextColorPicker').value;
+        document.getElementById('fmtHeaderTextColorText').value = color.toUpperCase();
+      } else {
+        var color = document.getElementById('fmtContentTextColorPicker').value;
+        document.getElementById('fmtContentTextColorText').value = color.toUpperCase();
+      }
+    }
+
+    function syncColorText(section) {
+      var textId = (section === 'header') ? 'fmtHeaderTextColorText' : 'fmtContentTextColorText';
+      var pickerId = (section === 'header') ? 'fmtHeaderTextColorPicker' : 'fmtContentTextColorPicker';
+      var val = document.getElementById(textId).value.trim();
+      var hexRegex = /^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+      if (hexRegex.test(val)) {
+        if (!val.startsWith('#')) {
+          val = '#' + val;
+        }
+        document.getElementById(pickerId).value = val;
+      }
+    }
+
+    function submitHeaderFormat() {
+      var idx = document.getElementById('formatCardHeaderIdx').value;
+      var isCustom = document.getElementById('fmtWidthTypeCustom').checked;
+      var widthVal = parseInt(document.getElementById('fmtWidthValue').value, 10);
+
+      if (isCustom && (isNaN(widthVal) || widthVal < 20 || widthVal > 1000)) {
+        showToast("Vui lòng nhập độ rộng từ 20 đến 1000 px.");
+        return;
+      }
+
+      // Save width
+      builderHeaders[idx].widthType = isCustom ? 'custom' : 'auto';
+      builderHeaders[idx].width = isCustom ? widthVal : null;
+
+      // Parse colors
+      var hColorVal = document.getElementById('fmtHeaderTextColorText').value.trim();
+      if (hColorVal && !hColorVal.startsWith('#')) hColorVal = '#' + hColorVal;
+      var cColorVal = document.getElementById('fmtContentTextColorText').value.trim();
+      if (cColorVal && !cColorVal.startsWith('#')) cColorVal = '#' + cColorVal;
+
+      // Header format object
+      builderHeaders[idx].headerFormat = {
+        font: document.getElementById('fmtHeaderFont').value || null,
+        fontSize: document.getElementById('fmtHeaderFontSize').value ? parseInt(document.getElementById('fmtHeaderFontSize').value, 10) : null,
+        align: document.getElementById('fmtHeaderAlign').value || null,
+        bold: document.getElementById('fmtHeaderBold').checked,
+        italic: document.getElementById('fmtHeaderItalic').checked,
+        strikethrough: document.getElementById('fmtHeaderStrike').checked,
+        textColor: hColorVal || null
+      };
+
+      // Content format object
+      builderHeaders[idx].contentFormat = {
+        font: document.getElementById('fmtContentFont').value || null,
+        fontSize: document.getElementById('fmtContentFontSize').value ? parseInt(document.getElementById('fmtContentFontSize').value, 10) : null,
+        align: document.getElementById('fmtContentAlign').value || null,
+        bold: document.getElementById('fmtContentBold').checked,
+        italic: document.getElementById('fmtContentItalic').checked,
+        strikethrough: document.getElementById('fmtContentStrike').checked,
+        textColor: cColorVal || null
+      };
+
+      closeModal('headerFormatModal');
+      showToast("Đã lưu định dạng cột.");
+      renderBuilderList();
+    }
+
+    function selectColorOption(el) {
+      var options = document.querySelectorAll('.color-option');
+      options.forEach(function (opt) { opt.classList.remove('active'); });
+
+      el.className = "color-option active";
+      selectedColorHex = el.getAttribute('data-color');
+    }
+
+
+
+    function submitTemplateForm() {
+      var id = document.getElementById('editTemplateId').value;
+      var name = document.getElementById('templateName').value.trim();
+
+      if (!name) {
+        showCustomAlert("Vui lòng điền tên bản mẫu!");
+        return;
+      }
+
+      var headerCellHeight = document.getElementById('templateHeaderCellHeight').value;
+      var contentCellHeight = document.getElementById('templateContentCellHeight').value;
+      var deleteExtraColumns = document.getElementById('templateDeleteExtraColumns').checked;
+      var applyTableBorder = document.getElementById('templateApplyTableBorder').checked;
+
+      showToast("Đang lưu bản mẫu...");
+
+      callApi('saveTemplate', {
+        id: id || null,
+        name: name,
+        headers: builderHeaders,
+        headerCellHeight: headerCellHeight,
+        contentCellHeight: contentCellHeight,
+        deleteExtraColumns: deleteExtraColumns,
+        applyTableBorder: applyTableBorder
+      }, function (res) {
+        if (res) {
+          showToast(res.message);
+          if (res.success) {
+            closeTemplateEditView();
+            refreshData();
+          }
+        } else {
+          showToast("Lỗi: Không nhận được phản hồi từ server.");
+        }
+      });
+    }
+
+    function triggerDeleteTemplate(id) {
+      var t = templates.filter(function (item) { return String(item.id) === String(id); })[0];
+      if (!t) return;
+
+      showCustomConfirm(
+        "Xóa Bản mẫu",
+        "Bạn có chắc chắn muốn xóa bản mẫu '" + t.name + "' không? (Hành động này không ảnh hưởng đến các cấu trúc sheet đã được tạo từ trước).",
+        function () {
+          showToast("Đang xóa bản mẫu...");
+          callApi('deleteTemplate', id, function (res) {
+            if (res) {
+              showToast(res.message);
+              if (res.success) refreshData();
+            } else {
+              showToast("Lỗi: Không nhận được phản hồi từ server.");
+            }
+          });
+        }
+      );
+    }
+
+
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.toString().replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeJsString(str) {
+      if (!str) return '';
+      return str.toString().replace(/'/g, "\\'").replace(/"/g, '\\"');
+    }
+
+    function saveAndInitDatabase(templateId, configData, successMsg) {
+      showToast("Đang lưu cấu hình và đồng bộ dữ liệu...");
+      callApi('saveTemplateDatabaseConfig', configData, function(res) {
+        if (res && res.success) {
+          showToast(successMsg || "Đã lưu cấu hình database thành công.");
+          refreshData(function() {
+            openTemplateLinkView();
+            try {
+              window.parent.postMessage({ type: 'DATA_CHANGED' }, '*');
+            } catch(e){}
+          });
+        } else {
+          showToast("Lỗi: " + (res ? res.message : "Lỗi lưu cấu hình."));
+        }
+      }, function(err) {
+        showToast("Lỗi kết nối máy chủ: " + err.toString());
+      });
+    }
+
+    // --- DATABASE CONFIGURATION FUNCTIONS ---
+    function toggleDbSortFields() {
+      var mechanism = document.getElementById('dbSortMechanism').value;
+      var columnArea = document.getElementById('dbSortColumnArea');
+      if (mechanism === 'column') {
+        columnArea.style.display = 'block';
+      } else {
+        columnArea.style.display = 'none';
+      }
+    }
+
+    function populateDbSortColumnOptions() {
+      var templateId = document.getElementById('editTemplateId').value;
+      var template = templates.filter(function (t) { return String(t.id) === String(templateId); })[0];
+      var select = document.getElementById('dbSortColumn');
+      select.innerHTML = "";
+
+      if (template && template.headers) {
+        template.headers.forEach(function (item) {
+          var hDef = headers.filter(function (h) { return h.id === item.headerId; })[0];
+          if (hDef) {
+            var option = document.createElement('option');
+            option.value = hDef.id;
+            option.text = hDef.name;
+            select.appendChild(option);
+          }
+        });
+      }
+    }
+
+    function openDatabaseModal() {
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      populateDbSortColumnOptions();
+
+      var container = document.getElementById('dbSheetsTree');
+      container.innerHTML = "<div style='color: var(--text-muted); text-align: center; padding: 15px 0; font-style: italic;'>Đang tải...</div>";
+      openModal('databaseModal');
+
+      callApi('getLinkedSheets', { templateId: templateId }, function(response) {
+        if (response && response.success) {
+          renderDbSheetsFlatList(response.sheets);
+        } else {
+          container.innerHTML = "<div style='color: var(--danger); text-align: center; padding: 10px 0;'>" + (response ? response.message : "Lỗi tải liên kết.") + "</div>";
+        }
+      }, function(err) {
+        container.innerHTML = "<div style='color: var(--danger); text-align: center; padding: 10px 0;'>Lỗi kết nối máy chủ.</div>";
+      });
+    }
+
+    function renderDbSheetsFlatList(sheets) {
+      var templateId = document.getElementById('editTemplateId').value;
+      var template = templates.filter(function (t) { return String(t.id) === String(templateId); })[0];
+      var dbConfig = template ? template.databaseConfig : null;
+      var dbLinkedSheets = (dbConfig && dbConfig.linkedSheets) ? dbConfig.linkedSheets : [];
+      var dbName = (dbConfig && dbConfig.dbName) ? dbConfig.dbName : "DATABASE";
+      
+      document.getElementById('dbNameInput').value = dbName;
+      
+      var mechanism = (dbConfig && dbConfig.sortMechanism) ? dbConfig.sortMechanism : "sheet";
+      var sortColumnId = (dbConfig && dbConfig.sortColumnId) ? dbConfig.sortColumnId : "";
+      var sortDirection = (dbConfig && dbConfig.sortDirection) ? dbConfig.sortDirection : "asc";
+
+      document.getElementById('dbSortMechanism').value = mechanism;
+      if (sortColumnId) {
+        document.getElementById('dbSortColumn').value = sortColumnId;
+      } else if (document.getElementById('dbSortColumn').options[0]) {
+        document.getElementById('dbSortColumn').value = document.getElementById('dbSortColumn').options[0].value;
+      }
+      document.getElementById('dbSortDirection').value = sortDirection;
+
+      toggleDbSortFields();
+
+      var container = document.getElementById('dbSheetsTree');
+      container.innerHTML = "";
+      
+      if (!sheets || sheets.length === 0) {
+        container.innerHTML = "<div style='color: var(--text-muted); text-align: center; padding: 15px 0; font-style: italic;'>Không có sheet nào liên kết với bản mẫu này.</div>";
+        return;
+      }
+      
+      var html = "";
+      var sheetsMap = {};
+      sheets.forEach(function(s) { sheetsMap[s.name] = s; });
+
+      // Render các sheet đã liên kết trước (theo đúng thứ tự dbLinkedSheets)
+      dbLinkedSheets.forEach(function(name) {
+        if (sheetsMap[name]) {
+          html += `
+            <div class="selector-item" onclick="onDbSheetItemClick(event)" style="padding: 6px 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="db-sheet-checkbox" data-name="${escapeHtml(name)}" checked onclick="event.stopPropagation()" style="cursor: pointer; width: 16px; height: 16px; margin: 0; flex-shrink: 0;">
+              <label style="cursor: pointer; font-size: 12px; margin-bottom: 0; color: var(--text-main); font-weight: normal; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(name)}</label>
+            </div>
+          `;
+        }
+      });
+
+      // Render các sheet chưa liên kết sau
+      sheets.forEach(function(sheet) {
+        if (dbLinkedSheets.indexOf(sheet.name) === -1) {
+          html += `
+            <div class="selector-item" onclick="onDbSheetItemClick(event)" style="padding: 6px 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" class="db-sheet-checkbox" data-name="${escapeHtml(sheet.name)}" onclick="event.stopPropagation()" style="cursor: pointer; width: 16px; height: 16px; margin: 0; flex-shrink: 0;">
+              <label style="cursor: pointer; font-size: 12px; margin-bottom: 0; color: var(--text-main); font-weight: normal; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(sheet.name)}</label>
+            </div>
+          `;
+        }
+      });
+      container.innerHTML = html;
+    }
+
+    function onDbSheetItemClick(event) {
+      var chk = event.currentTarget.querySelector('.db-sheet-checkbox');
+      if (chk) {
+        chk.checked = !chk.checked;
+      }
+    }
+
+    function submitDatabaseConfig() {
+      var templateId = document.getElementById('editTemplateId').value;
+      var dbName = document.getElementById('dbNameInput').value.trim();
+      
+      if (!dbName) {
+        showCustomAlert("Vui lòng điền tên DATABASE!");
+        return;
+      }
+      
+      var checkedSheets = [];
+      var checkboxes = document.querySelectorAll('#dbSheetsTree .db-sheet-checkbox');
+      checkboxes.forEach(function(chk) {
+        if (chk.checked) {
+          checkedSheets.push(chk.getAttribute('data-name'));
+        }
+      });
+
+      var sortMechanism = document.getElementById('dbSortMechanism').value;
+      var sortColumnId = document.getElementById('dbSortColumn').value;
+      var sortDirection = document.getElementById('dbSortDirection').value;
+      var t = templates.filter(function(item) { return String(item.id) === String(templateId); })[0];
+      var enableProtection = t && t.databaseConfig ? !!t.databaseConfig.enableProtection : false;
+
+      // Cập nhật local templates array
+      if (t) {
+        t.databaseConfig = {
+          dbName: dbName,
+          linkedSheets: checkedSheets,
+          sortMechanism: sortMechanism,
+          sortColumnId: sortColumnId,
+          sortDirection: sortDirection,
+          enableProtection: enableProtection
+        };
+      }
+      
+      closeModal('databaseModal');
+      renderLinkedSheets(_linkedSheetsCache);
+    }
+
+    function moveDbLinkedSheet(event, idx, direction) {
+      if (event) event.stopPropagation();
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      if (!t || !t.databaseConfig) return;
+
+      var dbConfig = t.databaseConfig;
+      var linkedSheets = dbConfig.linkedSheets;
+      if (!linkedSheets || linkedSheets.length === 0) return;
+
+      var targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= linkedSheets.length) return;
+
+      // FLIP animation cho mọi cơ chế sắp xếp
+      var container = document.querySelector('.folder-sheets-container');
+      if (!container) return;
+      var cards = Array.from(container.querySelectorAll('.sheet-card'));
+      var currentCard = cards[idx];
+      var targetCard = cards[targetIdx];
+      if (!currentCard || !targetCard) return;
+
+      var offset = targetCard.offsetTop - currentCard.offsetTop;
+      currentCard.style.pointerEvents = 'none';
+      targetCard.style.pointerEvents = 'none';
+      currentCard.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+      currentCard.style.transform = 'translateY(' + offset + 'px)';
+      targetCard.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+      targetCard.style.transform = 'translateY(' + (-offset) + 'px)';
+
+      setTimeout(function() {
+        currentCard.style.transform = '';
+        currentCard.style.transition = '';
+        currentCard.style.pointerEvents = '';
+        targetCard.style.transform = '';
+        targetCard.style.transition = '';
+        targetCard.style.pointerEvents = '';
+
+        // Swap in local data
+        var temp = linkedSheets[idx];
+        linkedSheets[idx] = linkedSheets[targetIdx];
+        linkedSheets[targetIdx] = temp;
+
+        renderLinkedSheets(_linkedSheetsCache);
+      }, 250);
+    }
+
+    function toggleDbKebabMenu(event) {
+      if (event) event.stopPropagation();
+      var dropdown = document.getElementById("dbKebabDropdown");
+      if (!dropdown) return;
+      var isAlreadyOpen = dropdown.style.display === "block";
+      
+      closeAllDbKebabs();
+      
+      if (!isAlreadyOpen) {
+        dropdown.style.display = "block";
+      }
+    }
+
+    function toggleDatabaseProtection() {
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      if (!t || !t.databaseConfig) return;
+
+      t.databaseConfig.enableProtection = !t.databaseConfig.enableProtection;
+      renderLinkedSheets(_linkedSheetsCache);
+    }
+    
+    function applyDatabaseConfig() {
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      if (!t || !t.databaseConfig) return;
+
+      var dbConfig = t.databaseConfig;
+      showLoadingOverlay('Đang áp dụng cấu hình DATABASE...');
+      callApi('saveTemplateDatabaseConfig', {
+        templateId: templateId,
+        dbName: dbConfig.dbName,
+        linkedSheets: dbConfig.linkedSheets || [],
+        sortMechanism: dbConfig.sortMechanism || 'sheet',
+        sortColumnId: dbConfig.sortColumnId || null,
+        sortDirection: dbConfig.sortDirection || 'asc',
+        enableProtection: !!dbConfig.enableProtection
+      }, function(res) {
+        hideLoadingOverlay();
+        if (res && res.success) {
+          showToast("Đã áp dụng cấu hình DATABASE thành công.");
+          _dbConfigOriginal = JSON.parse(JSON.stringify(dbConfig));
+          renderLinkedSheets(_linkedSheetsCache);
+          try { window.parent.postMessage({ type: 'DATA_CHANGED' }, '*'); } catch(e){}
+        } else {
+          showToast("Lỗi: " + (res ? res.message : "Không có phản hồi."));
+        }
+      });
+    }
+
+    function cancelDatabaseConfig() {
+      var templateId = document.getElementById('editTemplateId').value;
+      if (!templateId) return;
+
+      var t = templates.filter(function (item) { return String(item.id) === String(templateId); })[0];
+      if (!t) return;
+
+      if (_dbConfigOriginal) {
+        t.databaseConfig = JSON.parse(JSON.stringify(_dbConfigOriginal));
+      } else {
+        t.databaseConfig = null;
+      }
+
+      renderLinkedSheets(_linkedSheetsCache);
+    }
+
+    function closeAllDbKebabs() {
+      var dropdown = document.getElementById("dbKebabDropdown");
+      if (dropdown) {
+        dropdown.style.display = "none";
+      }
+    }
+
+    document.addEventListener("click", function (event) {
+      if (event.target && !event.target.closest('.kebab-menu-container')) {
+        closeAllDbKebabs();
+      }
+    });
+  </script>
+</body>
+
+</html>

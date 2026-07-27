@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-main: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --radius-lg: 12px;
+        --radius-md: 8px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-main);
+        font-family: 'Inter', sans-serif;
+        color: var(--text-main);
+        font-size: 13px;
+        box-sizing: border-box;
+      }
+
+      body.in-iframe {
+        background-color: transparent;
+      }
+
+      .container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .header-box {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      h2 {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .badge-count {
+        background-color: #eff6ff;
+        color: var(--primary);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        border: 1px solid #dbeafe;
+      }
+
+      .btn {
+        padding: 8px 14px;
+        background-color: var(--primary);
+        color: #ffffff;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: inherit;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
+      .btn:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-danger {
+        background-color: #ef4444;
+      }
+
+      .btn-danger:hover {
+        background-color: #dc2626;
+      }
+
+      .btn-secondary {
+        background-color: #f1f5f9;
+        color: var(--text-main);
+      }
+
+      .btn-secondary:hover {
+        background-color: #e2e8f0;
+      }
+
+      .logs-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 8px 16px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .log-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-color);
+        transition: var(--transition);
+      }
+
+      .log-item:last-child {
+        border-bottom: none;
+      }
+
+      .log-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background-color: #f1f5f9;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .log-details {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .log-text {
+        font-size: 12.5px;
+        color: var(--text-main);
+        line-height: 1.5;
+        word-break: break-word;
+      }
+
+      .log-email {
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      .log-time {
+        font-size: 11px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* EMPTY STATE */
+      .empty-state {
+        padding: 32px 16px;
+        text-align: center;
+        color: var(--text-muted);
+        font-style: italic;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      /* TOAST */
+      .toast {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background-color: #0f172a;
+        color: #ffffff;
+        padding: 10px 16px;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        z-index: 1000;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* POPUP MODAL DOUBLE CHECK */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        box-sizing: border-box;
+      }
+
+      .modal-content {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        width: 260px;
+        padding: 16px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-sizing: border-box;
+      }
+
+      .modal-content h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #ef4444;
+      }
+
+      .modal-content p {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      /* SCROLLBAR */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body class="in-iframe">
+    <div class="container">
+      
+      <!-- Tiêu đề & Hành động xóa -->
+      <div class="header-box">
+        <h2>
+          <span>Nhật ký chỉnh sửa</span>
+          <span class="badge-count" id="logCount">0</span>
+        </h2>
+        <button class="btn btn-danger" id="clearLogsBtn" onclick="confirmClearLogs()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Xóa nhật ký
+        </button>
+      </div>
+
+      <!-- Danh sách Logs -->
+      <div class="logs-card" id="logsContainer">
+        <div class="empty-state">Đang tải nhật ký hệ thống...</div>
+      </div>
+    </div>
+
+    <!-- Hộp thoại xác nhận xóa nhật ký -->
+    <div id="confirmClearModal" class="modal">
+      <div class="modal-content">
+        <h3>Xác nhận xóa</h3>
+        <p>Bạn có chắc chắn muốn xóa toàn bộ lịch sử nhật ký hoạt động của hệ thống? Hành động này không thể khôi phục.</p>
+        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
+          <button class="btn btn-secondary" onclick="closeConfirmModal()">Hủy</button>
+          <button class="btn btn-danger" onclick="executeClearLogs()">Xóa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast thông báo -->
+    <div id="statusToast" class="toast">Đang lưu...</div>
+
+    <script>
+      var lastTimestamp = "0";
+      var currentIsOwner = false;
+
+      window.onload = function() {
+        // Kiểm tra quyền trước: chỉ owner mới thấy nút xóa
+        callApi('getAuthStatus', null, function(authRes) {
+          currentIsOwner = authRes && authRes.isOwner === true;
+          var clearBtn = document.getElementById('clearLogsBtn');
+          if (clearBtn) {
+            clearBtn.style.display = currentIsOwner ? 'inline-flex' : 'none';
+          }
+        });
+        loadLogs();
+        
+        // Vòng lặp đồng bộ ngầm thời gian thực (5 giây/lần)
+        setInterval(function() {
+          callApi('getLastChangedTimestamp', null, function(ts) {
+            if (ts && ts !== lastTimestamp) {
+              lastTimestamp = ts;
+              loadLogs();
+            }
+          });
+        }, 5000);
+      };
+
+      // API Caller helper, tự động bắt lỗi phân quyền
+      function callApi(action, data, onSuccess, onFailure) {
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(function(err) {
+            var errMsg = err.toString();
+            if (errMsg.indexOf("Bạn không có quyền truy cập") !== -1) {
+              google.script.run.showAccessDeniedAlert();
+              google.script.host.close();
+              return;
+            }
+            if (onFailure) {
+              onFailure(err);
+            } else {
+              showToast("Lỗi kết nối máy chủ: " + errMsg);
+            }
+          })
+          .handleApiRequest({ action: action, data: data });
+      }
+
+      // Tải danh sách logs
+      function loadLogs() {
+        callApi('getActivityLogs', null, function(res) {
+          if (res && res.success) {
+            renderLogs(res.logs || []);
+          } else {
+            showToast(res.message || "Không thể tải nhật ký hoạt động.");
+          }
+        });
+      }
+
+      // Render danh sách log
+      function renderLogs(logs) {
+        var countBadge = document.getElementById('logCount');
+        countBadge.innerText = logs.length;
+
+        var container = document.getElementById('logsContainer');
+        container.innerHTML = '';
+
+        if (logs.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted)">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              Chưa có nhật ký hoạt động nào được ghi nhận.
+            </div>
+          `;
+          return;
+        }
+
+        logs.forEach(function(log) {
+          var item = document.createElement('div');
+          item.className = 'log-item';
+
+          // Biểu tượng Clock
+          var icon = document.createElement('div');
+          icon.className = 'log-icon';
+          icon.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          `;
+          item.appendChild(icon);
+
+          // Chi tiết log
+          var details = document.createElement('div');
+          details.className = 'log-details';
+
+          var text = document.createElement('div');
+          text.className = 'log-text';
+          
+          var emailSpan = document.createElement('span');
+          emailSpan.className = 'log-email';
+          emailSpan.innerText = log.email + " ";
+          text.appendChild(emailSpan);
+
+          var actionText = document.createTextNode(log.action);
+          text.appendChild(actionText);
+
+          details.appendChild(text);
+
+          var time = document.createElement('div');
+          time.className = 'log-time';
+          time.innerText = formatDateTime(log.timestamp);
+          details.appendChild(time);
+
+          item.appendChild(details);
+          container.appendChild(item);
+        });
+      }
+
+      // Format thời gian hiển thị hh:mm:ss dd/MM/yyyy
+      function formatDateTime(timestamp) {
+        if (!timestamp) return "";
+        var date = new Date(timestamp);
+        var hrs = ("0" + date.getHours()).slice(-2);
+        var mins = ("0" + date.getMinutes()).slice(-2);
+        var secs = ("0" + date.getSeconds()).slice(-2);
+        var day = ("0" + date.getDate()).slice(-2);
+        var month = ("0" + (date.getMonth() + 1)).slice(-2);
+        var year = date.getFullYear();
+        return hrs + ":" + mins + ":" + secs + " " + day + "/" + month + "/" + year;
+      }
+
+      // Modal xác nhận xóa
+      function confirmClearLogs() {
+        document.getElementById('confirmClearModal').style.display = "flex";
+      }
+
+      function closeConfirmModal() {
+        document.getElementById('confirmClearModal').style.display = "none";
+      }
+
+      function executeClearLogs() {
+        closeConfirmModal();
+        showToast("Đang xóa...");
+        callApi('clearActivityLogs', null, function(res) {
+          if (res && res.success) {
+            showToast("Đã xóa toàn bộ nhật ký hệ thống.");
+            loadLogs();
+          } else {
+            showToast(res.message || "Lỗi xóa nhật ký.");
+          }
+        });
+      }
+
+      // Hiển thị Toast
+      var toastTimeout;
+      function showToast(message) {
+        var toast = document.getElementById('statusToast');
+        toast.innerText = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(function() {
+          toast.classList.remove('show');
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>

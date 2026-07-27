@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --bg-main: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --radius-lg: 12px;
+        --radius-md: 8px;
+        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-main);
+        font-family: 'Inter', sans-serif;
+        color: var(--text-main);
+        font-size: 13px;
+        box-sizing: border-box;
+      }
+
+      body.in-iframe {
+        background-color: transparent;
+      }
+
+      .container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        box-sizing: border-box;
+        height: 100vh;
+        overflow-y: auto;
+      }
+
+      .section-box {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      h2 {
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0 0 4px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .description {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin: 0;
+      }
+
+      /* FORM NHẬP */
+      .input-group {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+      }
+
+      .input-group input {
+        flex: 1;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+        box-sizing: border-box;
+        transition: var(--transition);
+      }
+
+      .input-group input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .btn {
+        padding: 10px 16px;
+        background-color: var(--primary);
+        color: #ffffff;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        font-family: inherit;
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
+      .btn:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-danger {
+        background-color: #ef4444;
+      }
+
+      .btn-danger:hover {
+        background-color: #dc2626;
+      }
+
+      .btn-secondary {
+        background-color: #f1f5f9;
+        color: var(--text-main);
+      }
+
+      .btn-secondary:hover {
+        background-color: #e2e8f0;
+      }
+
+      .search-box {
+        position: relative;
+        width: 100%;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 12.5px;
+        font-family: inherit;
+        outline: none;
+        box-sizing: border-box;
+        transition: var(--transition);
+      }
+
+      .search-box input:focus {
+        border-color: var(--primary);
+      }
+
+      /* CARDS LIST */
+      .list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .manager-card {
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #fafbfc;
+        transition: var(--transition);
+        box-sizing: border-box;
+        gap: 12px;
+      }
+
+      .manager-card:hover {
+        border-color: #cbd5e1;
+        background-color: #f8fafc;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+      }
+
+      .card-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+        flex-grow: 1;
+      }
+
+      /* AVATAR */
+      .avatar-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        overflow: hidden;
+        flex-shrink: 0;
+        background-color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border-color);
+      }
+
+      .avatar {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .card-details {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        gap: 2px;
+      }
+
+      .card-name {
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 13px;
+        color: var(--text-main);
+      }
+
+      .badge {
+        display: inline-block;
+        font-size: 9px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 9999px;
+        text-transform: uppercase;
+        width: fit-content;
+      }
+
+      .badge-owner {
+        background-color: #fef3c7;
+        color: #d97706;
+        border: 1px solid #fde68a;
+      }
+
+      .badge-admin {
+        background-color: #dbeafe;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+      }
+
+      .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+
+      .btn-icon {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+      }
+
+      .btn-icon:hover {
+        background-color: #f1f5f9;
+        color: #ef4444;
+      }
+
+      /* LOADING / EMPTY STATE */
+      .empty-state {
+        padding: 24px;
+        text-align: center;
+        color: var(--text-muted);
+        font-style: italic;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--radius-md);
+      }
+
+      /* TOAST NOTIFICATION */
+      .toast {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background-color: #0f172a;
+        color: #ffffff;
+        padding: 10px 16px;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: 500;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        z-index: 1000;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* POPUP MODAL DOUBLE CHECK */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.4);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        box-sizing: border-box;
+      }
+
+      .modal-content {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        width: 260px;
+        padding: 16px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-sizing: border-box;
+      }
+
+      .modal-content h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #ef4444;
+      }
+
+      .modal-content p {
+        margin: 0;
+        font-size: 12.5px;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      /* WEBKIT SCROLLBAR */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body class="in-iframe">
+    <div class="container">
+      
+      <!-- Section 1: Thêm Gmail mới (chỉ hiển thị với Chủ sở hữu) -->
+      <div id="addEmailSection" class="section-box">
+        <h2>Cấp quyền Admin</h2>
+        <p class="description">Chủ sở hữu bảng tính luôn có toàn quyền. Bạn có thể cấp thêm quyền quản trị và truy cập menu hệ thống cho các tài khoản Gmail phụ hoặc cộng tác viên khác dưới đây.</p>
+        
+        <form onsubmit="handleAddEmail(event)">
+          <div class="input-group">
+            <input type="email" id="newEmailInput" placeholder="Nhập địa chỉ Gmail..." required autocomplete="off">
+            <button class="btn" type="submit">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Thêm
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Section 2: Danh sách Admin -->
+      <div class="section-box">
+        <h2>Danh sách Admin</h2>
+        
+        <div class="search-box">
+          <input type="text" id="searchInput" oninput="filterEmails()" placeholder="Tìm kiếm Email...">
+        </div>
+
+        <div class="list-container" id="adminListContainer">
+          <!-- Sẽ nạp động qua Javascript -->
+          <div class="empty-state">Đang tải danh sách Admin...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hộp thoại xác nhận xóa (Custom Confirm Modal) -->
+    <div id="confirmModal" class="modal">
+      <div class="modal-content">
+        <h3>Xác nhận xóa</h3>
+        <p id="confirmModalText">Bạn có chắc chắn muốn xóa quyền truy cập của email này?</p>
+        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px;">
+          <button class="btn btn-secondary" onclick="closeConfirmModal()">Hủy</button>
+          <button class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast báo trạng thái -->
+    <div id="statusToast" class="toast">Đang lưu...</div>
+
+    <script>
+      var allEmails = [];
+      var ownerEmail = "";
+      var emailToDelete = "";
+      var currentIsOwner = false;
+      
+      // Khởi chạy khi nạp trang
+      window.onload = function() {
+        loadAdminEmails();
+        
+        // Bắt đầu vòng lặp đồng bộ ngầm thời gian thực (5 giây/lần) để kiểm tra phân quyền
+        var lastTimestamp = "0";
+        setInterval(function() {
+          callApi('getLastChangedTimestamp', null, function(ts) {
+            if (ts && ts !== lastTimestamp) {
+              lastTimestamp = ts;
+              loadAdminEmails();
+            }
+          });
+        }, 5000);
+      };
+
+      // Helper gửi request API qua Cổng kết nối duy nhất, tự động bắt lỗi phân quyền để đóng ứng dụng
+      function callApi(action, data, onSuccess, onFailure) {
+        google.script.run
+          .withSuccessHandler(onSuccess)
+          .withFailureHandler(function(err) {
+            var errMsg = err.toString();
+            if (errMsg.indexOf("Bạn không có quyền truy cập") !== -1) {
+              google.script.run.showAccessDeniedAlert();
+              google.script.host.close();
+              return;
+            }
+            if (onFailure) {
+              onFailure(err);
+            } else {
+              showToast("Lỗi kết nối máy chủ: " + errMsg);
+            }
+          })
+          .handleApiRequest({ action: action, data: data });
+      }
+
+      // Tải danh sách admin và thông tin chủ sở hữu
+      function loadAdminEmails() {
+        callApi('getAuthEmails', null, function(res) {
+          if (res && res.success) {
+            allEmails = res.emails || [];
+            ownerEmail = res.ownerEmail || "";
+            currentIsOwner = res.isOwner === true;
+            // Chỉ owner mới thấy form cấp quyền
+            document.getElementById('addEmailSection').style.display = currentIsOwner ? 'flex' : 'none';
+            renderEmailsList();
+          } else {
+            showToast(res.message || "Lỗi tải thông tin phân quyền");
+          }
+        });
+      }
+
+      // Vẽ danh sách Card ra UI
+      function renderEmailsList() {
+        var container = document.getElementById('adminListContainer');
+        container.innerHTML = '';
+        var searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+
+        // 1. Luôn hiển thị card của Chủ Sở Hữu (nếu không có bộ lọc hoặc khớp bộ lọc)
+        if (ownerEmail && (!searchVal || ownerEmail.indexOf(searchVal) !== -1)) {
+          var ownerCard = createEmailCard(ownerEmail, true);
+          container.appendChild(ownerCard);
+        }
+
+        // 2. Lọc danh sách whitelist theo từ khóa tìm kiếm
+        var filteredList = allEmails.filter(function(email) {
+          if (email.toLowerCase() === ownerEmail.toLowerCase()) return false; // Không lặp lại chủ sở hữu
+          return !searchVal || email.toLowerCase().indexOf(searchVal) !== -1;
+        });
+
+        // 3. Hiển thị các whitelist admin
+        filteredList.forEach(function(email) {
+          var card = createEmailCard(email, false);
+          container.appendChild(card);
+        });
+
+        // 4. Nếu danh sách trống
+        if (!ownerEmail && filteredList.length === 0) {
+          container.innerHTML = '<div class="empty-state">Danh sách phân quyền trống.</div>';
+        }
+      }
+
+      // Tạo đối tượng HTML Card
+      function createEmailCard(email, isOwner) {
+        var card = document.createElement('div');
+        card.className = 'manager-card';
+        card.setAttribute('data-email', email);
+
+        // Google profile photo api, fallback to Gravatar mystery person if 404
+        var avatarUrl = "https://profiles.google.com/s2/photos/profile/" + encodeURIComponent(email);
+        var fallbackAvatar = "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+
+        var cardInfo = document.createElement('div');
+        cardInfo.className = 'card-info';
+
+        var avatarWrapper = document.createElement('div');
+        avatarWrapper.className = 'avatar-wrapper';
+        var img = document.createElement('img');
+        img.className = 'avatar';
+        img.src = avatarUrl;
+        img.onerror = function() {
+          this.onerror = null;
+          this.src = fallbackAvatar;
+        };
+        avatarWrapper.appendChild(img);
+        cardInfo.appendChild(avatarWrapper);
+
+        var details = document.createElement('div');
+        details.className = 'card-details';
+        
+        var nameSpan = document.createElement('span');
+        nameSpan.className = 'card-name';
+        nameSpan.innerText = email;
+        details.appendChild(nameSpan);
+
+        var badge = document.createElement('span');
+        if (isOwner) {
+          badge.className = 'badge badge-owner';
+          badge.innerText = 'Chủ sở hữu';
+        } else {
+          badge.className = 'badge badge-admin';
+          badge.innerText = 'Quản trị viên';
+        }
+        details.appendChild(badge);
+        cardInfo.appendChild(details);
+        card.appendChild(cardInfo);
+
+        // Nút hành động (chỉ owner mới có quyền xóa)
+        if (!isOwner && currentIsOwner) {
+          var actions = document.createElement('div');
+          actions.className = 'card-actions';
+
+          var delBtn = document.createElement('button');
+          delBtn.className = 'btn-icon';
+          delBtn.title = 'Xóa quyền truy cập';
+          delBtn.onclick = function() {
+            deleteEmail(email);
+          };
+          delBtn.innerHTML = `
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          `;
+          actions.appendChild(delBtn);
+          card.appendChild(actions);
+        }
+
+        return card;
+      }
+
+      // Xử lý thêm Email
+      function handleAddEmail(e) {
+        e.preventDefault();
+        var input = document.getElementById('newEmailInput');
+        var email = input.value.trim().toLowerCase();
+
+        if (!email) return;
+
+        showToast("Đang thêm...");
+        callApi('addAuthEmail', email, function(res) {
+          if (res && res.success) {
+            input.value = '';
+            showToast("Đã cấp quyền cho " + email);
+            loadAdminEmails();
+          } else {
+            showToast(res.message || "Không thể cấp quyền email này");
+          }
+        });
+      }
+
+      // Mở Modal xác nhận xóa
+      function deleteEmail(email) {
+        emailToDelete = email;
+        document.getElementById('confirmModalText').innerText = "Bạn có chắc chắn muốn xóa quyền truy cập của: " + email + "?";
+        document.getElementById('confirmModal').style.display = "flex";
+      }
+
+      // Đóng Modal xác nhận xóa
+      function closeConfirmModal() {
+        document.getElementById('confirmModal').style.display = "none";
+        emailToDelete = "";
+      }
+
+      // Xử lý xóa Email thực tế khi ấn nút Xóa trên Modal
+      document.getElementById('confirmDeleteBtn').onclick = function() {
+        if (!emailToDelete) return;
+        var email = emailToDelete;
+        closeConfirmModal();
+
+        showToast("Đang xóa...");
+        callApi('deleteAuthEmail', email, function(res) {
+          if (res && res.success) {
+            showToast("Đã xóa quyền của " + email);
+            loadAdminEmails();
+          } else {
+            showToast(res.message || "Không thể xóa email này");
+          }
+        });
+      };
+
+      // Tìm lọc Email
+      function filterEmails() {
+        renderEmailsList();
+      }
+
+      // Hiển thị thông báo Toast
+      var toastTimeout;
+      function showToast(message) {
+        var toast = document.getElementById('statusToast');
+        toast.innerText = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(function() {
+          toast.classList.remove('show');
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>
