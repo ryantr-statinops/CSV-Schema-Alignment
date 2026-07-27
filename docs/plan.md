@@ -14,6 +14,25 @@
 - Add a request wrapper with request IDs, timeout handling, and structured errors.
 - Keep user configuration in spreadsheet tabs, named ranges, or Script Properties.
 
+## Phase 1.5 — Apps Script complexity reduction
+
+The current Apps Script has a large request router, repeated persistence logic,
+cross-calling services, and UI files that mix state, rendering, and API calls.
+Reduce that complexity before adding more product behavior.
+
+- Extract a shared `DocumentStore` for JSON properties, defaults, and safe parsing.
+- Replace the large `handleApiRequest` switch with a grouped action registry.
+- Separate actions into auth, CRUD, sheet, template, data-entry, and activity modules.
+- Standardize success and error response shapes with stable error codes.
+- Separate domain logic from Spreadsheet/PropertiesService side effects.
+- Reduce global mutable state and make service dependencies explicit where practical.
+- Split large HTML files into clearer API, state, rendering, and interaction sections.
+- Add focused tests for the store, router, response model, and critical use cases.
+- Preserve existing public function names while migrating callers incrementally.
+
+This phase is complete only when the existing UI behavior remains intact and the
+main router can be tested without executing unrelated services.
+
 ## Phase 2 — Stateless Go engine
 
 - Create a small `net/http` service with `/healthz` and `/v1/compute`.
