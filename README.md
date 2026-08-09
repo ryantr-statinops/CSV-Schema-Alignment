@@ -11,7 +11,6 @@ Extensible schema matching engine for aligning semantically equivalent columns a
 - Embedding similarity
 - Score fusion
 - Hungarian assignment
-- Evaluation outputs
 
 ## Development
 
