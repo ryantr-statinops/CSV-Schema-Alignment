@@ -1,58 +1,24 @@
 # Architecture
 
-```text
-Google Sheet owned by user
-        │ read/write
-        ▼
-Apps Script Library + sidebar
-        │ HTTPS request with bounded payload
-        ▼
-Stateless Go Engine
-        │ ephemeral computation only
-        ▼
-Response written back to the same Google Sheet
-```
+    Two or more CSV paths
+            │
+            ▼
+    Python CSV reader and column profiler
+            │ weighted pairwise similarities + one-to-one assignment
+            ▼
+    AlignmentPlan (editable names, source mappings, confidence scores)
+            │ validate mappings, then export
+            ▼
+    UTF-8 vertically concatenated CSV
 
-The backend is not a database and is not the system of record. It must not persist spreadsheet contents, request bodies, or derived business data.
+## Python library boundary
 
-## Responsibilities
+build_alignment_plan(files, infer_schema=True, sample_size=20) reads comma-delimited UTF-8/UTF-8-BOM CSV files and creates an ordered plan. Global inference compares each pair, then merges accepted edges only when a group contains at most one column per file. Reference mode uses the first file's headers and aligns every later file independently; unmatched later columns remain separate appended outputs.
 
-| Component | Responsibility |
-|---|---|
-| Apps Script | Menus, sidebar, spreadsheet reads/writes, user-facing errors |
-| Go engine | Validation, computation, orchestration, bounded retries |
-| Google Sheet | User-owned source of truth and result surface |
-| Local fixtures | Reproducible tests and sample workflows |
-| Observability | Request ID, duration, status, and error class only |
+The plan stores ordered absolute input paths and ordered PlannedColumn objects. Each planned column has an editable canonical name, a per-file source header or None, and per-file confidence (None when unmapped). to_dict() and from_dict() provide JSON-compatible review and persistence. Export validates names and mappings, rejects output/input path collisions, preserves source row ordering, and fills absent sources with empty strings.
 
-## Request lifecycle
+Scoring reuses column profiling, weighted comparison, score fusion, existing assignment behavior, and the 0.35 minimum assignment confidence. The implementation uses only the Python standard library.
 
-1. Apps Script reads only the ranges required by the selected operation.
-2. It sends a versioned request with an operation name and request ID.
-3. The Go engine validates the schema and applies a strict timeout and size cap.
-4. Computation happens in memory.
-5. The response contains results or a structured error.
-6. Apps Script writes the result to the user's spreadsheet.
+## Adapter boundary
 
-## Privacy constraints
-
-- Never log request or response bodies.
-- Never persist business data in a database, queue, object store, or cache.
-- Keep payloads in memory and discard them after the request.
-- Prefer Sheet-native execution when data must never leave Google Sheets.
-
-## Initial API
-
-```http
-POST /v1/compute
-```
-
-```json
-{
-  "operation": "schema.align",
-  "request_id": "uuid",
-  "input": {}
-}
-```
-
-Operations must be allowlisted. Arbitrary code execution and generic proxying are outside the MVP boundary.
+appscript/ sources are retained unchanged. A Google Sheets adapter could later translate Sheet data into the library's input/output contract, but no adapter, HTTP endpoint, Go engine, or Sheets connection is implemented here. The Python library reads and writes local CSV paths only.
