@@ -1,43 +1,30 @@
 # Features
 
-## MVP features
+## Available
 
-### Sheet-native workflow
+### Multi-file schema planning
 
-Users start from an existing Google Sheet. The extension adds menus, a sidebar, and controlled operations without requiring them to build Apps Script code.
+Build an editable plan for two or more CSV files. Global inference groups columns using all file pairs while preventing two columns from one input from entering the same group. First-file reference mode retains that file's header order, maps later files independently, and appends unmatched later-file columns separately.
 
-### Project configuration in the Sheet
+### Reviewable plans
 
-Configuration is stored in dedicated tabs or named ranges inside the user's file. This keeps the project portable and avoids a backend configuration store.
+AlignmentPlan and PlannedColumn are mutable slotted dataclasses. Canonical names can be edited before export. to_dict() / from_dict() support JSON-compatible review and persistence. Per-input mappings identify the source header or None; confidence is None for unmapped sources.
 
-### Bounded compute operations
+### Vertical CSV export
 
-The extension can send a selected range or compact profile to the Go engine for fast computation. Each operation declares its input, output, timeout, and size limit.
+Export uses the plan's output-column order, input-file order, and original row order. Unmapped source fields produce blank cells. Output uses UTF-8 and standard CSV quoting, and parent directories are created. A leading _source_file basename field is optional and off by default.
 
-### Result synchronization
+### Validation
 
-Results are written back into the same spreadsheet with clear status markers, timestamps, and human-readable errors.
+The library requires at least two distinct inputs, positive sample size, a header row, and unique input headers. Export checks nonempty inputs/columns, unique canonical names, valid per-file headers, no repeated source-header mapping in a file, and no output path equal to an input path.
 
-### Privacy-first behavior
+### Local demo and CLI
 
-The product must communicate when data is sent for transient computation and must never silently persist spreadsheet contents.
+The CLI accepts multiple positional CSV files, supports global/reference mode selection, plan-summary output, and CSV export. scripts/demo_match.py reads all sorted CSV files from input/ and writes output/merged.csv.
 
-### Testable local workflow
+## Deferred
 
-Existing files in `input/` and `output/` are local fixtures. They should test the same transformations without requiring a live Google account.
-
-## Deferred features
-
-| Feature | Reason to defer |
-|---|---|
-| Central project database | Conflicts with the user-owned data model |
-| Generic arbitrary code execution | Security and abuse risk |
-| Durable jobs containing user payloads | Requires a new privacy decision |
-| Multi-user collaboration service | Google Sheets already provides sharing |
-
-## Success criteria
-
-- A new user can complete the main workflow from a Sheet sidebar.
-- No business payload is retained by the backend.
-- Failures are visible and recoverable from the spreadsheet.
-- The same operation can be tested using local fixtures.
+- Google Sheets adapter and Apps Script integration.
+- Any HTTP service, Go engine, authentication, or remote computation.
+- XLSX and non-CSV formats.
+- Interactive plan editing in the CLI; the Python plan API is the editing surface.
