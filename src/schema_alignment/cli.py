@@ -1,19 +1,19 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
-from .pipeline import match_csv_files, merge_csv_files
+from . import build_alignment_plan, export_aligned_csv
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Match CSV schemas between two files.")
-    parser.add_argument("left_csv", type=Path, help="Path to the first CSV file")
-    parser.add_argument("right_csv", type=Path, help="Path to the second CSV file")
+    parser = argparse.ArgumentParser(description="Align schemas across multiple CSV files.")
+    parser.add_argument("csv_files", nargs="+", type=Path, help="Two or more input CSV files")
     parser.add_argument(
         "--output",
         type=Path,
-        help="Optional path to write a merged CSV file with aligned columns",
+        help="Optional path to write the vertically concatenated aligned CSV",
     )
     parser.add_argument(
         "--sample-size",
@@ -21,27 +21,37 @@ def build_parser() -> argparse.ArgumentParser:
         default=20,
         help="Number of rows to sample from each column when computing value similarity",
     )
+    parser.add_argument(
+        "--no-infer-schema",
+        action="store_true",
+        help="Use the first input file's headers and order as the reference schema",
+    )
+    parser.add_argument(
+        "--include-source-file",
+        action="store_true",
+        help="Add each input basename in a leading _source_file field",
+    )
     return parser
 
 
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
+    if len(args.csv_files) < 2:
+        parser.error("at least two input CSV files are required")
 
+    plan = build_alignment_plan(
+        args.csv_files,
+        infer_schema=not args.no_infer_schema,
+        sample_size=args.sample_size,
+    )
     if args.output:
-        result, output_csv = merge_csv_files(
-            args.left_csv,
-            args.right_csv,
-            args.output,
-            sample_size=args.sample_size,
-        )
-        print(result.to_text())
+        output_csv = export_aligned_csv(plan, args.output, include_source_file=args.include_source_file)
+        print(json.dumps(plan.to_dict(), ensure_ascii=False, indent=2))
         print()
-        print(f"Merged CSV written to: {output_csv}")
+        print(f"Aligned CSV written to: {output_csv}")
         return
-
-    result = match_csv_files(args.left_csv, args.right_csv, sample_size=args.sample_size)
-    print(result.to_text())
+    print(json.dumps(plan.to_dict(), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
